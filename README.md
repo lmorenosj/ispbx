@@ -39,7 +39,9 @@ The API will be available at http://localhost:8000
 
 - GET `/`: Welcome message
 - GET `/pjsip/config`: Get current PJSIP configuration
-- GET `/pjsip/status`: Get PJSIP status
+- GET `/pjsip/config/{extension}`: Get configuration for a specific extension
+- GET `/pjsip/status`: Get PJSIP status for all extensions
+- GET `/pjsip/status/{extension}`: Get status for a specific extension
 
 ## Note
 - The application needs access to `/etc/asterisk/pjsip.conf`
