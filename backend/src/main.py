@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 import os
 from typing import Dict, Optional
 import logging
+from datetime import datetime
+from ami_client import AmiClient
 
 app = FastAPI(title="ISPBX Manager", version="1.0.0")
 
@@ -10,6 +12,24 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 PJSIP_CONF_PATH = "/etc/asterisk/pjsip.conf"
+
+# Initialize AMI client
+ami_client = AmiClient(
+    host=os.getenv('ASTERISK_HOST', '127.0.0.1'),
+    port=int(os.getenv('ASTERISK_AMI_PORT', '5038')),
+    username=os.getenv('ASTERISK_AMI_USER', 'admin'),
+    password=os.getenv('ASTERISK_AMI_PASSWORD', 'admin')
+)
+
+@app.on_event("startup")
+async def startup_event():
+    """Connect to AMI when application starts"""
+    await ami_client.connect()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Close AMI connection when application shuts down"""
+    await ami_client.close()
 
 def parse_endpoint_config(raw_config: Dict) -> Dict:
     """
@@ -50,7 +70,7 @@ def parse_endpoint_config(raw_config: Dict) -> Dict:
         aor_data = sections["aor"]
         
         # Get callerid from endpoint section
-        callerid = endpoint_data.get("callerid", "user%s <%s>" % (number, number))
+        callerid = endpoint_data.get("callerid", f"user{number} <{number}>")
         
         endpoints[number] = {
             "type": "endpoint",
@@ -81,7 +101,6 @@ def read_pjsip_conf() -> Dict:
                     
                 if line.startswith('[') and line.endswith(']'):
                     current_section = line[1:-1]
-                    # Don't overwrite existing sections, create a new dict for the section
                     if current_section not in config:
                         config[current_section] = {}
                 elif current_section and '=' in line:
@@ -123,6 +142,34 @@ async def get_pjsip_config(extension: str = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+async def get_pjsip_config(extension: str = None) -> Dict:
+    """
+    Get PJSIP configuration for a specific extension
+    """
+    try:
+        config = read_pjsip_conf()
+        if extension:
+            if extension in config:
+                return {
+                    "config_exists": True,
+                    "type": "endpoint",
+                    "max_contacts": config[extension].get("max_contacts", "1"),
+                    "callerid": config[extension].get("callerid", f"{extension} <{extension}>")
+                }
+            return {
+                "config_exists": False
+            }
+        return {
+            "config_exists": True,
+            "endpoints": config
+        }
+    except Exception as e:
+        logger.error(f"Error reading PJSIP config: {str(e)}")
+        return {
+            "config_exists": False,
+            "error": str(e)
+        }
+
 @app.get("/pjsip/status")
 @app.get("/pjsip/status/{extension}")
 async def get_pjsip_status(extension: str = None):
@@ -130,42 +177,86 @@ async def get_pjsip_status(extension: str = None):
     Get the current PJSIP status, optionally filtered by extension
     """
     try:
-        config = read_pjsip_conf()
+        # Get detailed endpoint information
+        endpoint_details = await ami_client.get_endpoint_details(extension)
         
-        if extension:
-            if extension in config:
-                endpoint_config = config[extension]
-                return {
-                    "status": "success",
-                    "extension": extension,
-                    "details": {
-                        "config_exists": True,
-                        "registration_status": "Registered",  # This would need actual Asterisk AMI integration
-                        "endpoint_type": endpoint_config["type"],
-                        "max_contacts": endpoint_config["max_contacts"],
-                        "contact_status": "Available",  # This would need actual Asterisk AMI integration
-                        "callerid": endpoint_config["callerid"],
-                        "last_registration": "2025-02-03 00:50:48",  # This would need actual Asterisk AMI integration
-                        "ip_address": "Unknown"  # This would need actual Asterisk AMI integration
-                    }
-                }
-            else:
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"Extension {extension} not found"
-                )
-                
-        return {
-            "status": "success",
-            "details": {
-                "total_endpoints": len(config),
-                "endpoints": list(config.keys()),
-                "config_file": PJSIP_CONF_PATH,
-                "config_exists": os.path.exists(PJSIP_CONF_PATH)
+        if extension is None:
+            # Process all endpoints
+            all_endpoints = []
+            for endpoint in endpoint_details.get('endpoints', []):
+                ext = endpoint['extension']
+                details = process_endpoint_details(endpoint)
+                all_endpoints.append({
+                    "extension": ext,
+                    "details": details
+                })
+            return {
+                "status": "success",
+                "endpoints": all_endpoints
             }
-        }
+        else:
+            # Process single endpoint
+            details = process_endpoint_details(endpoint_details)
+            return {
+                "status": "success",
+                "extension": extension,
+                "details": details
+            }
     except Exception as e:
+        logger.error(f"Error getting PJSIP status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+def process_endpoint_details(endpoint_details: Dict) -> Dict:
+    """
+    Process endpoint details from AMI response
+    """
+    endpoint_info = {}
+    auth_info = {}
+    aor_info = {}
+    contact_info = {}
+    registration_status = "UNREGISTERED"
+    
+    if 'response' in endpoint_details:
+        for event in endpoint_details['response']:
+            if event.get('Event') == 'EndpointDetail':
+                endpoint_info = {
+                    'device_state': event.get('DeviceState'),
+                    'callerid': event.get('Callerid'),
+                    'context': event.get('Context'),
+                    'codecs': event.get('Allow'),
+                    'dtmf_mode': event.get('DtmfMode')
+                }
+            elif event.get('Event') == 'AuthDetail':
+                auth_info = {
+                    'username': event.get('Username'),
+                    'auth_type': event.get('AuthType')
+                }
+            elif event.get('Event') == 'AorDetail':
+                aor_info = {
+                    'contacts': event.get('Contacts'),
+                    'contacts_registered': event.get('ContactsRegistered'),
+                    'max_contacts': event.get('MaxContacts')
+                }
+                if int(event.get('ContactsRegistered', 0)) > 0:
+                    registration_status = "REGISTERED"
+            elif event.get('Event') == 'ContactStatusDetail':
+                contact_info = {
+                    'status': event.get('Status'),
+                    'uri': event.get('URI'),
+                    'user_agent': event.get('UserAgent'),
+                    'reg_expire': event.get('RegExpire'),
+                    'via_address': event.get('ViaAddress')
+                }
+    
+    return {
+        "exists_in_config": endpoint_details.get('exists_in_config', False),
+        "registration_status": registration_status,
+        "endpoint": endpoint_info,
+        "auth": auth_info,
+        "aor": aor_info,
+        "contact": contact_info
+    }
 
 if __name__ == "__main__":
     import uvicorn
