@@ -116,59 +116,53 @@ def read_pjsip_conf() -> Dict:
 async def root():
     return {"message": "ISPBX Manager API"}
 
-@app.get("/pjsip/config")
-@app.get("/pjsip/config/{extension}")
-async def get_pjsip_config(extension: str = None):
+@app.get("/pjsip")
+@app.get("/pjsip/{extension}")
+async def get_pjsip_details(extension: str = None):
     """
-    Get all endpoint configurations or a specific extension
+    Get PJSIP endpoint details, optionally filtered by extension
+    """
+    try:
+        endpoint_details = await ami_client.get_endpoint_details(extension)
+        
+        if extension is None:
+            return {
+                "status": "success",
+                "endpoints": endpoint_details.get('endpoints', [])
+            }
+        else:
+            return {
+                "status": "success",
+                "extension": extension,
+                "details": endpoint_details
+            }
+    except Exception as e:
+        logger.error(f"Error getting PJSIP details: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/pjsip/{extension}/config")
+async def get_pjsip_extension_config(extension: str):
+    """
+    Get PJSIP configuration for a specific extension from pjsip.conf
     """
     try:
         config = read_pjsip_conf()
-        if extension:
-            if extension in config:
-                return {
-                    "status": "success",
-                    "extension": extension,
-                    "config": config[extension]
-                }
-            else:
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"Extension {extension} not found"
-                )
-        return {"status": "success", "endpoints": config}
+        if extension in config:
+            return {
+                "status": "success",
+                "extension": extension,
+                "config": config[extension]
+            }
+        else:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Extension {extension} not found in pjsip.conf"
+            )
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
+        logger.error(f"Error reading PJSIP config: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
-async def get_pjsip_config(extension: str = None) -> Dict:
-    """
-    Get PJSIP configuration for a specific extension
-    """
-    try:
-        config = read_pjsip_conf()
-        if extension:
-            if extension in config:
-                return {
-                    "config_exists": True,
-                    "type": "endpoint",
-                    "max_contacts": config[extension].get("max_contacts", "1"),
-                    "callerid": config[extension].get("callerid", f"{extension} <{extension}>")
-                }
-            return {
-                "config_exists": False
-            }
-        return {
-            "config_exists": True,
-            "endpoints": config
-        }
-    except Exception as e:
-        logger.error(f"Error reading PJSIP config: {str(e)}")
-        return {
-            "config_exists": False,
-            "error": str(e)
-        }
 
 @app.get("/pjsip/status")
 @app.get("/pjsip/status/{extension}")
@@ -257,6 +251,34 @@ def process_endpoint_details(endpoint_details: Dict) -> Dict:
         "aor": aor_info,
         "contact": contact_info
     }
+
+async def get_pjsip_config(extension: str = None) -> Dict:
+    """
+    Get PJSIP configuration for a specific extension
+    """
+    try:
+        config = read_pjsip_conf()
+        if extension:
+            if extension in config:
+                return {
+                    "config_exists": True,
+                    "type": "endpoint",
+                    "max_contacts": config[extension].get("max_contacts", "1"),
+                    "callerid": config[extension].get("callerid", f"{extension} <{extension}>")
+                }
+            return {
+                "config_exists": False
+            }
+        return {
+            "config_exists": True,
+            "endpoints": config
+        }
+    except Exception as e:
+        logger.error(f"Error reading PJSIP config: {str(e)}")
+        return {
+            "config_exists": False,
+            "error": str(e)
+        }
 
 if __name__ == "__main__":
     import uvicorn

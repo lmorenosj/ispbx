@@ -52,22 +52,17 @@ class AmiClient:
             })
 
             if extension is None:
-                # Return all endpoints
+                # Return all endpoints using only PJSIPShowEndpoints information
                 all_endpoints = []
                 if endpoints:
                     for event in endpoints:
                         if event.get('Event') == 'EndpointList':
                             ext = event.get('ObjectName')
                             if ext:
-                                # Get details for this endpoint
-                                response = await self.manager.send_action({
-                                    'Action': 'PJSIPShowEndpoint',
-                                    'Endpoint': ext
-                                })
                                 all_endpoints.append({
                                     'extension': ext,
                                     'exists_in_config': True,
-                                    'response': response
+                                    'response': event
                                 })
                 return {'endpoints': all_endpoints}
             else:
