@@ -4,6 +4,7 @@ from typing import Dict, Optional
 import logging
 from datetime import datetime
 from ami_client import AmiClient
+from config.pjsip_config import EXTENSION_PARAMS
 
 app = FastAPI(title="ISPBX Manager", version="1.0.0")
 
@@ -31,56 +32,7 @@ async def shutdown_event():
     """Close AMI connection when application shuts down"""
     await ami_client.close()
 
-def parse_endpoint_config(raw_config: Dict) -> Dict:
-    """
-    Parse and organize endpoint configurations into a simplified format
-    """
-    endpoints = {}
-    
-    # First pass: collect all sections by type
-    endpoint_sections = {}
-    
-    for section, params in raw_config.items():
-        # Skip transport and general sections
-        if section == "general" or section.startswith("transport-"):
-            continue
-            
-        # Get the endpoint number
-        section_number = None
-        if section.isdigit():
-            section_number = section
-            
-        if section_number:
-            if section_number not in endpoint_sections:
-                endpoint_sections[section_number] = {"endpoint": {}, "auth": {}, "aor": {}}
-            
-            # Determine the type based on the parameters
-            section_type = params.get("type", "")
-            # Special handling for auth sections
-            if section_type == "auth" or "auth_type" in params:
-                section_type = "auth"
-                
-            if section_type in ["endpoint", "auth", "aor"]:
-                endpoint_sections[section_number][section_type].update(params)
 
-    # Second pass: organize into final format
-    for number, sections in endpoint_sections.items():
-        endpoint_data = sections["endpoint"]
-        auth_data = sections["auth"]
-        aor_data = sections["aor"]
-        
-        # Get callerid from endpoint section
-        callerid = endpoint_data.get("callerid", f"user{number} <{number}>")
-        
-        endpoints[number] = {
-            "type": "endpoint",
-            "max_contacts": aor_data.get("max_contacts", "1"),
-            "username": auth_data.get("username", number),
-            "password": auth_data.get("password", ""),
-            "callerid": callerid.strip()
-        }
-    
-    return endpoints
 
 def read_pjsip_conf() -> Dict:
     """
@@ -107,7 +59,7 @@ def read_pjsip_conf() -> Dict:
                     key, value = [x.strip() for x in line.split('=', 1)]
                     config[current_section][key] = value
                     
-        return parse_endpoint_config(config)
+        return config
     except Exception as e:
         logger.error(f"Error reading PJSIP configuration: {str(e)}")
         raise HTTPException(status_code=500, detail="Error reading PJSIP configuration")
@@ -116,8 +68,8 @@ def read_pjsip_conf() -> Dict:
 async def root():
     return {"message": "ISPBX Manager API"}
 
-@app.get("/pjsip")
-@app.get("/pjsip/{extension}")
+@app.get("/endpoints")
+@app.get("/endpoints/{extension}")
 async def get_pjsip_details(extension: str = None):
     """
     Get PJSIP endpoint details, optionally filtered by extension
@@ -140,18 +92,30 @@ async def get_pjsip_details(extension: str = None):
         logger.error(f"Error getting PJSIP details: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/pjsip/{extension}/config")
+@app.get("/endpoints/{extension}/config")
 async def get_pjsip_extension_config(extension: str):
     """
     Get PJSIP configuration for a specific extension from pjsip.conf
+    Returns configuration in JSON format with all parameters in a single section
     """
     try:
-        config = read_pjsip_conf()
-        if extension in config:
+        raw_config = read_pjsip_conf()
+        config = {}
+        
+        if extension in raw_config:
+            section_data = raw_config[extension]
+            
+            # Add all relevant parameters to config
+            for key, value in section_data.items():
+                if key in EXTENSION_PARAMS:
+                    config[key] = value
+
+        # Check if we found any configuration
+        if config:
             return {
                 "status": "success",
                 "extension": extension,
-                "config": config[extension]
+                "config": config
             }
         else:
             raise HTTPException(
@@ -164,42 +128,6 @@ async def get_pjsip_extension_config(extension: str):
         logger.error(f"Error reading PJSIP config: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/pjsip/status")
-@app.get("/pjsip/status/{extension}")
-async def get_pjsip_status(extension: str = None):
-    """
-    Get the current PJSIP status, optionally filtered by extension
-    """
-    try:
-        # Get detailed endpoint information
-        endpoint_details = await ami_client.get_endpoint_details(extension)
-        
-        if extension is None:
-            # Process all endpoints
-            all_endpoints = []
-            for endpoint in endpoint_details.get('endpoints', []):
-                ext = endpoint['extension']
-                details = process_endpoint_details(endpoint)
-                all_endpoints.append({
-                    "extension": ext,
-                    "details": details
-                })
-            return {
-                "status": "success",
-                "endpoints": all_endpoints
-            }
-        else:
-            # Process single endpoint
-            details = process_endpoint_details(endpoint_details)
-            return {
-                "status": "success",
-                "extension": extension,
-                "details": details
-            }
-    except Exception as e:
-        logger.error(f"Error getting PJSIP status: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
 
 def process_endpoint_details(endpoint_details: Dict) -> Dict:
     """
