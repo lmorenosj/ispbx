@@ -5,6 +5,7 @@ import logging
 from datetime import datetime
 from ami_client import AmiClient
 from config.pjsip_config import EXTENSION_PARAMS
+from config import pjsip_status_params
 
 app = FastAPI(title="ISPBX Manager", version="1.0.0")
 
@@ -76,18 +77,34 @@ async def get_pjsip_details(extension: str = None):
     """
     try:
         endpoint_details = await ami_client.get_endpoint_details(extension)
+        filtered_response = {}
         
         if extension is None:
             return {
                 "status": "success",
                 "endpoints": endpoint_details.get('endpoints', [])
             }
-        else:
-            return {
-                "status": "success",
-                "extension": extension,
-                "details": endpoint_details
-            }
+        
+        if 'response' in endpoint_details:
+            for event in endpoint_details['response']:
+                event_type = event.get('Event')
+                
+                # Skip non-event items and completion events
+                if not event_type or event_type in pjsip_status_params.SKIP_EVENTS or event.get('Response') == 'Success':
+                    continue
+                
+                # Filter the event based on configured parameters
+                filtered_event = pjsip_status_params.filter_event(event, event_type)
+                if filtered_event:
+                    # Convert event type to lowercase for response key
+                    key = event_type.replace('Detail', '').lower()
+                    filtered_response[key] = filtered_event
+        
+        return {
+            "status": "success",
+            "extension": extension,
+            "details": filtered_response
+        }
     except Exception as e:
         logger.error(f"Error getting PJSIP details: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -129,56 +146,56 @@ async def get_pjsip_extension_config(extension: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def process_endpoint_details(endpoint_details: Dict) -> Dict:
+@app.get("/endpoints/{extension}")
+async def get_pjsip_details(extension: str):
     """
-    Process endpoint details from AMI response
+    Get PJSIP endpoint details for a specific extension
     """
-    endpoint_info = {}
-    auth_info = {}
-    aor_info = {}
-    contact_info = {}
-    registration_status = "UNREGISTERED"
-    
-    if 'response' in endpoint_details:
-        for event in endpoint_details['response']:
-            if event.get('Event') == 'EndpointDetail':
-                endpoint_info = {
-                    'device_state': event.get('DeviceState'),
-                    'callerid': event.get('Callerid'),
-                    'context': event.get('Context'),
-                    'codecs': event.get('Allow'),
-                    'dtmf_mode': event.get('DtmfMode')
-                }
-            elif event.get('Event') == 'AuthDetail':
-                auth_info = {
-                    'username': event.get('Username'),
-                    'auth_type': event.get('AuthType')
-                }
-            elif event.get('Event') == 'AorDetail':
-                aor_info = {
-                    'contacts': event.get('Contacts'),
-                    'contacts_registered': event.get('ContactsRegistered'),
-                    'max_contacts': event.get('MaxContacts')
-                }
-                if int(event.get('ContactsRegistered', 0)) > 0:
-                    registration_status = "REGISTERED"
-            elif event.get('Event') == 'ContactStatusDetail':
-                contact_info = {
-                    'status': event.get('Status'),
-                    'uri': event.get('URI'),
-                    'user_agent': event.get('UserAgent'),
-                    'reg_expire': event.get('RegExpire'),
-                    'via_address': event.get('ViaAddress')
-                }
-    
-    return {
-        "exists_in_config": endpoint_details.get('exists_in_config', False),
-        "registration_status": registration_status,
-        "endpoint": endpoint_info,
-        "auth": auth_info,
-        "aor": aor_info,
-        "contact": contact_info
-    }
+    try:
+        endpoint_details = await ami_client.get_endpoint_details(extension)
+        filtered_response = {}
+        
+        if 'response' in endpoint_details:
+            for event in endpoint_details['response']:
+                event_type = event.get('Event')
+                
+                # Skip non-event items and completion events
+                if not event_type or event_type in ['EndpointDetailComplete'] or event.get('Response') == 'Success':
+                    continue
+                    
+                if event_type == 'EndpointDetail':
+                    filtered_response['endpoint'] = {
+                        'type': event.get('ObjectType'),
+                        'name': event.get('ObjectName'),
+                        'device_state': event.get('DeviceState'),
+                        'context': event.get('Context')
+                    }
+                elif event_type == 'AuthDetail':
+                    filtered_response['auth'] = {
+                        'username': event.get('Username'),
+                        'auth_type': event.get('AuthType')
+                    }
+                elif event_type == 'AorDetail':
+                    filtered_response['aor'] = {
+                        'max_contacts': event.get('MaxContacts'),
+                        'contacts_registered': event.get('ContactsRegistered', '0')
+                    }
+                elif event_type == 'ContactStatusDetail' and event.get('URI'):
+                    filtered_response['contact'] = {
+                        'uri': event.get('URI'),
+                        'user_agent': event.get('UserAgent'),
+                        'via_address': event.get('ViaAddress'),
+                        'status': event.get('Status')
+                    }
+        
+        return {
+            "status": "success",
+            "extension": extension,
+            "details": filtered_response
+        }
+    except Exception as e:
+        logger.error(f"Error getting PJSIP details: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 async def get_pjsip_config(extension: str = None) -> Dict:
     """
