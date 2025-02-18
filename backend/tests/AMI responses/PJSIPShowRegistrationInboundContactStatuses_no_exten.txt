@@ -1,0 +1,38 @@
+Asterisk Call Manager/11.0.0
+Response: Success
+Message: Authentication accepted
+
+Event: FullyBooted
+Privilege: system,all
+Uptime: 4160
+LastReload: 4160
+Status: Fully Booted
+
+Response: Success
+EventList: start
+Message: Following are ContactStatusEvents for each Inbound registration
+
+Event: ContactStatusDetail
+AOR: 100
+URI: sip:100@192.168.0.12:38979;transport=UDP;rinstance=15d9c612231bbb0c
+UserAgent: Zoiper v2.10.20.5
+RegExpire: 1739820197
+ViaAddress: 192.168.0.12:38979
+CallID: LCZldDi3Dsg-dZR3sg4iwA..
+Status: NonQualified
+RoundtripUsec: N/A
+EndpointName: 100
+ID: 100;@523038aabe510887c5404ee22f250bda
+AuthenticateQualify: 0
+OutboundProxy: 
+Path: 
+QualifyFrequency: 0
+QualifyTimeout: 3.000
+
+Event: ContactStatusDetailComplete
+EventList: Complete
+ListItems: 1
+
+Response: Goodbye
+Message: Thanks for all the fish.
+

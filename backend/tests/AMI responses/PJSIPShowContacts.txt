@@ -1,0 +1,43 @@
+#PJSIPShowContacts
+# It only shows the active contacts or extensions   
+
+Asterisk Call Manager/11.0.0
+Response: Success
+Message: Authentication accepted
+
+Event: FullyBooted
+Privilege: system,all
+Uptime: 3606
+LastReload: 3606
+Status: Fully Booted
+
+Response: Success
+EventList: start
+Message: A listing of Contacts follows, presented as ContactList events
+
+Event: ContactList
+ObjectType: contact
+ObjectName: 100;@523038aabe510887c5404ee22f250bda
+ViaAddr: 192.168.0.12
+QualifyTimeout: 3.000000
+CallId: LCZldDi3Dsg-dZR3sg4iwA..
+RegServer: 
+PruneOnBoot: no
+Path: 
+Endpoint: 100
+ViaPort: 38979
+AuthenticateQualify: no
+Uri: sip:100@192.168.0.12:38979;transport=UDP;rinstance=15d9c612231bbb0c
+QualifyFrequency: 0
+UserAgent: Zoiper v2.10.20.5
+ExpirationTime: 1739819665
+OutboundProxy: 
+Status: NonQualified
+RoundtripUsec: N/A
+
+Event: ContactListComplete
+EventList: Complete
+ListItems: 1
+
+Response: Goodbye
+Message: Thanks for all the fish.

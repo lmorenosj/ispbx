@@ -1,66 +1,94 @@
-from fastapi import FastAPI, HTTPException
 import os
-from typing import Dict, Optional
+import ast
+import json
 import logging
+import socketio
+import configparser
+from typing import Dict, Optional
 from datetime import datetime
-from ami_client import AmiClient
-from config.pjsip_config import EXTENSION_PARAMS
-from config import pjsip_status_params
-
-app = FastAPI(title="ISPBX Manager", version="1.0.0")
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from logger import api_logger
+from ami import AmiClient
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+from contextlib import asynccontextmanager
+
+# Initialize Socket.IO
+sio = socketio.AsyncServer(
+    async_mode='asgi',
+    cors_allowed_origins=['*'],
+    logger=False,
+    engineio_logger=False
+)
+
+# Mount Socket.IO and configure CORS
+app.mount('/socket.io', socketio.ASGIApp(sio))
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+# Constants
 PJSIP_CONF_PATH = "/etc/asterisk/pjsip.conf"
+PJSIP_CONFIG_INI_PATH = "src/config/pjsip_config.ini"
+PJSIP_DETAIL_INI_PATH = "src/config/pjsip_detail.ini"
+
+# Socket.IO event handlers
+@sio.event
+async def connect(sid, environ):
+    logger.info(f"Client connected: {sid}")
+
+@sio.event
+async def disconnect(sid):
+    logger.info(f"Client disconnected: {sid}")
+
+async def broadcast_event(event_type: str, event_data: Dict):
+    """Broadcast an event to all connected Socket.IO clients"""
+    await sio.emit(event_type, {"data": event_data})
 
 # Initialize AMI client
 ami_client = AmiClient(
+    event_callback=broadcast_event,
     host=os.getenv('ASTERISK_HOST', '127.0.0.1'),
     port=int(os.getenv('ASTERISK_AMI_PORT', '5038')),
     username=os.getenv('ASTERISK_AMI_USER', 'admin'),
     password=os.getenv('ASTERISK_AMI_PASSWORD', 'admin')
 )
 
-@app.on_event("startup")
-async def startup_event():
-    """Connect to AMI when application starts"""
+# Lifecycle events
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: connect to AMI
     await ami_client.connect()
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Close AMI connection when application shuts down"""
+    yield
+    # Shutdown: close AMI connection
     await ami_client.close()
+
+# Update FastAPI app with lifespan
+app = FastAPI(
+    title="ISPBX Manager",
+    version="1.0.0",
+    lifespan=lifespan
+)
 
 
 
 def read_pjsip_conf() -> Dict:
-    """
-    Read and parse the pjsip.conf file
-    """
+    """Read and parse the pjsip.conf file"""
     if not os.path.exists(PJSIP_CONF_PATH):
         raise FileNotFoundError(f"PJSIP configuration file not found at {PJSIP_CONF_PATH}")
     
-    config = {}
-    current_section = None
-    
     try:
-        with open(PJSIP_CONF_PATH, 'r') as file:
-            for line in file:
-                line = line.strip()
-                if not line or line.startswith(';'):
-                    continue
-                    
-                if line.startswith('[') and line.endswith(']'):
-                    current_section = line[1:-1]
-                    if current_section not in config:
-                        config[current_section] = {}
-                elif current_section and '=' in line:
-                    key, value = [x.strip() for x in line.split('=', 1)]
-                    config[current_section][key] = value
-                    
-        return config
+        config_parser = configparser.ConfigParser(allow_no_value=True, comment_prefixes=(';',))
+        config_parser.read(PJSIP_CONF_PATH)
+        return {section: dict(config_parser[section]) for section in config_parser.sections()}
     except Exception as e:
         logger.error(f"Error reading PJSIP configuration: {str(e)}")
         raise HTTPException(status_code=500, detail="Error reading PJSIP configuration")
@@ -69,162 +97,123 @@ def read_pjsip_conf() -> Dict:
 async def root():
     return {"message": "ISPBX Manager API"}
 
-@app.get("/endpoints")
-@app.get("/endpoints/{extension}")
-async def get_pjsip_details(extension: str = None):
-    """
-    Get PJSIP endpoint details, optionally filtered by extension
-    """
-    try:
-        endpoint_details = await ami_client.get_endpoint_details(extension)
-        filtered_response = {}
-        
-        if extension is None:
-            return {
-                "status": "success",
-                "endpoints": endpoint_details.get('endpoints', [])
-            }
-        
-        if 'response' in endpoint_details:
-            for event in endpoint_details['response']:
-                event_type = event.get('Event')
-                
-                # Skip non-event items and completion events
-                if not event_type or event_type in pjsip_status_params.SKIP_EVENTS or event.get('Response') == 'Success':
-                    continue
-                
-                # Filter the event based on configured parameters
-                filtered_event = pjsip_status_params.filter_event(event, event_type)
-                if filtered_event:
-                    # Convert event type to lowercase for response key
-                    key = event_type.replace('Detail', '').lower()
-                    filtered_response[key] = filtered_event
-        
-        return {
-            "status": "success",
-            "extension": extension,
-            "details": filtered_response
-        }
-    except Exception as e:
-        logger.error(f"Error getting PJSIP details: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/endpoints/{extension}/config")
 async def get_pjsip_extension_config(extension: str):
-    """
-    Get PJSIP configuration for a specific extension from pjsip.conf
-    Returns configuration in JSON format with all parameters in a single section
-    """
+    """Get filtered PJSIP configuration for a specific extension"""
     try:
-        raw_config = read_pjsip_conf()
-        config = {}
-        
-        if extension in raw_config:
-            section_data = raw_config[extension]
-            
-            # Add all relevant parameters to config
-            for key, value in section_data.items():
-                if key in EXTENSION_PARAMS:
-                    config[key] = value
+        # Get allowed parameters from config
+        config_parser = configparser.ConfigParser()
+        config_parser.read(PJSIP_CONFIG_INI_PATH)
+        allowed_params = {param for section in config_parser.sections()
+                         for param, value in config_parser[section].items()
+                         if value.lower() == 'true'}
 
-        # Check if we found any configuration
-        if config:
-            return {
-                "status": "success",
-                "extension": extension,
-                "config": config
-            }
-        else:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Extension {extension} not found in pjsip.conf"
-            )
-    except FileNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        # Get and filter extension config
+        raw_config = read_pjsip_conf()
+        if extension not in raw_config:
+            raise HTTPException(status_code=404, detail=f"Extension {extension} not found")
+
+        config = {k: v for k, v in raw_config[extension].items() if k in allowed_params}
+        if not config:
+            raise HTTPException(status_code=404, detail=f"No allowed parameters found for {extension}")
+
+        return {"status": "success", "extension": extension, "config": config}
+
+    except HTTPException:
+        raise
     except Exception as e:
+        api_logger.log_request(
+            endpoint=f"/endpoints/{extension}/config",
+            method="GET",
+            params={"extension": extension},
+            status_code=500,
+            error=e
+        )
         logger.error(f"Error reading PJSIP config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Failed to read PJSIP configuration")
+
+@app.get("/endpoints")
+async def get_pjsip_details():
+    """Get details for all PJSIP endpoints"""
+    try:
+        endpoint_details = await ami_client.get_endpoint_details(None)
+        response = {"status": "success", "endpoints": endpoint_details.get('endpoints', [])}
+        api_logger.log_request(endpoint="/endpoints", method="GET", params={}, status_code=200)
+        return response
+    except Exception as e:
+        logger.error(f"Error getting PJSIP details: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get endpoint details")
 
 
 @app.get("/endpoints/{extension}")
 async def get_pjsip_details(extension: str):
-    """
-    Get PJSIP endpoint details for a specific extension
-    """
+    """Get details for a specific PJSIP endpoint"""
     try:
         endpoint_details = await ami_client.get_endpoint_details(extension)
-        filtered_response = {}
-        
-        if 'response' in endpoint_details:
-            for event in endpoint_details['response']:
-                event_type = event.get('Event')
-                
-                # Skip non-event items and completion events
-                if not event_type or event_type in ['EndpointDetailComplete'] or event.get('Response') == 'Success':
-                    continue
-                    
-                if event_type == 'EndpointDetail':
-                    filtered_response['endpoint'] = {
-                        'type': event.get('ObjectType'),
-                        'name': event.get('ObjectName'),
-                        'device_state': event.get('DeviceState'),
-                        'context': event.get('Context')
-                    }
-                elif event_type == 'AuthDetail':
-                    filtered_response['auth'] = {
-                        'username': event.get('Username'),
-                        'auth_type': event.get('AuthType')
-                    }
-                elif event_type == 'AorDetail':
-                    filtered_response['aor'] = {
-                        'max_contacts': event.get('MaxContacts'),
-                        'contacts_registered': event.get('ContactsRegistered', '0')
-                    }
-                elif event_type == 'ContactStatusDetail' and event.get('URI'):
-                    filtered_response['contact'] = {
-                        'uri': event.get('URI'),
-                        'user_agent': event.get('UserAgent'),
-                        'via_address': event.get('ViaAddress'),
-                        'status': event.get('Status')
-                    }
-        
+        if not endpoint_details.get('details'):
+            raise HTTPException(status_code=404, detail=f"Extension {extension} not found")
+            
+        response = {
+            "status": "success",
+            "extension": extension,
+            "details": endpoint_details.get('details', {})
+        }
+        api_logger.log_request(
+            endpoint=f"/endpoints/{extension}",
+            method="GET",
+            params={"extension": extension},
+            status_code=200
+        )
+        return response
+    except HTTPException:
+        raise
+    except Exception as e:
+        api_logger.log_request(
+            endpoint=f"/endpoints/{extension}",
+            method="GET",
+            params={"extension": extension},
+            status_code=500,
+            error=e
+        )
+        logger.error(f"Error getting PJSIP details: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get endpoint details")
+
+async def get_pjsip_config(extension: str = None) -> Dict:
+    """Get PJSIP configuration for an extension or all endpoints"""
+    try:
+        config = read_pjsip_conf()
+        if not extension:
+            return {"status": "success", "endpoints": config}
+            
+        if extension not in config:
+            raise HTTPException(status_code=404, detail=f"Extension {extension} not found")
+            
         return {
             "status": "success",
             "extension": extension,
-            "details": filtered_response
-        }
-    except Exception as e:
-        logger.error(f"Error getting PJSIP details: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-async def get_pjsip_config(extension: str = None) -> Dict:
-    """
-    Get PJSIP configuration for a specific extension
-    """
-    try:
-        config = read_pjsip_conf()
-        if extension:
-            if extension in config:
-                return {
-                    "config_exists": True,
-                    "type": "endpoint",
-                    "max_contacts": config[extension].get("max_contacts", "1"),
-                    "callerid": config[extension].get("callerid", f"{extension} <{extension}>")
-                }
-            return {
-                "config_exists": False
+            "config": {
+                "type": "endpoint",
+                "max_contacts": config[extension].get("max_contacts", "1"),
+                "callerid": config[extension].get("callerid", f"{extension} <{extension}>")
             }
-        return {
-            "config_exists": True,
-            "endpoints": config
         }
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error reading PJSIP config: {str(e)}")
-        return {
-            "config_exists": False,
-            "error": str(e)
-        }
+        logger.error(f"Error reading PJSIP config: {e}")
+        raise HTTPException(status_code=500, detail="Failed to read PJSIP configuration")
+
+@app.get("/api/calls/active")
+async def get_active_calls():
+    """Get information about all active calls"""
+    try:
+        calls = await ami_client.get_active_calls()
+        return {"status": "success", "calls": calls}
+    except Exception as e:
+        logger.error(f"Error getting active calls: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get active calls")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

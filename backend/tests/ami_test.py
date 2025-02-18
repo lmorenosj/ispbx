@@ -1,11 +1,16 @@
 import asyncio
-from ami_client import AmiClient
+from ami.client import AmiClient
 import logging
+import json
+import sys
+from typing import List, Dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 async def test_ami_connection():
+    """Test AMI connection and get all endpoint details"""
     # Initialize AMI client with the same credentials as main.py
     ami = AmiClient(
         host='127.0.0.1',
@@ -20,26 +25,25 @@ async def test_ami_connection():
         await ami.connect()
         logger.info("Successfully connected to AMI!")
         
-        # Get detailed information about endpoint 101
-        logger.info("Getting detailed information for endpoint 101...")
-        details = await ami.get_endpoint_details("101")
-        logger.info(f"Endpoint exists in config: {details['exists_in_config']}")
-        logger.info(f"Endpoint details: {details['response']}")
-        
-        # Get current state and registration
-        logger.info("\nGetting current state and registration...")
-        status = await ami.get_endpoint_state("101")
-        reg_status = await ami.get_endpoint_registration("101")
-        logger.info(f"Current state: {status}")
-        logger.info(f"Registration status: {reg_status}")
-        
+        # Get information about all endpoints
+        logger.info("\nGetting information for all endpoints...")
+        details = await ami.get_endpoint_details()
+        logger.info("\nRaw AMI Response:")
+        logger.info(json.dumps(details, indent=2))
+
+ 
     except Exception as e:
         logger.error(f"Error during AMI test: {e}")
     finally:
         # Clean up
-        logger.info("Closing AMI connection...")
+        logger.info("\nClosing AMI connection...")
         await ami.close()
         logger.info("AMI connection closed.")
+
+def print_usage():
+    print(f"Usage: python {sys.argv[0]}")
+    print("This will show all configured extensions")
+    sys.exit(1)
 
 if __name__ == "__main__":
     asyncio.run(test_ami_connection())

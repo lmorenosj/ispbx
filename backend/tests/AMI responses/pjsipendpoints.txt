@@ -1,0 +1,45 @@
+
+#Durin a call
+ubuntu@ubuntu:~/Documents/ispbx$ bash backend/tests/run_amitest_raw.sh 
+Asterisk Call Manager/11.0.0
+Response: Success
+Message: Authentication accepted
+
+Event: FullyBooted
+Privilege: system,all
+Uptime: 3163
+LastReload: 3163
+Status: Fully Booted
+
+Response: Success
+EventList: start
+Message: A listing of Endpoints follows, presented as EndpointList events
+
+Event: EndpointList
+ObjectType: endpoint
+ObjectName: 100
+Transport: 
+Aor: 100
+Auths: 100
+OutboundAuths: 
+Contacts: 100/sip:100@192.168.0.12:38979;transport=UDP;rinstance=15d9c612231bbb0c,
+DeviceState: In use
+ActiveChannels: 
+
+Event: EndpointList
+ObjectType: endpoint
+ObjectName: 101
+Transport: 
+Aor: 101
+Auths: 101
+OutboundAuths: 
+Contacts: 101/sip:101@192.168.0.22:64541;transport=UDP;rinstance=00e2be4fd77c40b0,
+DeviceState: In use
+ActiveChannels: 
+
+Event: EndpointListComplete
+EventList: Complete
+ListItems: 2
+
+Response: Goodbye
+Message: Thanks for all the fish.

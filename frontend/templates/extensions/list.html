@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>Extensions</h2>
+        <div class="row" id="endpoints-container">
+            <!-- Endpoints will be dynamically populated here -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal for endpoint details -->
+<div class="modal fade" id="endpointDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white py-2">
+                <h5 class="modal-title fs-6 mb-0">Extension Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-light p-2">
+                <div id="endpoint-detail-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-xl {
+        max-width: 500px;
+    }
+    #endpoint-detail-content .card {
+        border: none;
+        margin-bottom: 0.5rem;
+    }
+    #endpoint-detail-content .card-header {
+        background: #f8f9fa;
+        border-bottom: 2px solid #007bff;
+        padding: 0.5rem;
+    }
+    #endpoint-detail-content .card-header h5 {
+        font-size: 0.85rem;
+        margin: 0;
+        color: #0056b3;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    #endpoint-detail-content .card-body {
+        padding: 0.5rem;
+    }
+    #endpoint-detail-content .fas {
+        color: #007bff;
+        font-size: 0.7rem;
+    }
+    #endpoint-detail-content .text-muted {
+        font-size: 0.7rem;
+        text-transform: capitalize;
+    }
+    #endpoint-detail-content .fw-medium {
+        font-size: 0.8rem;
+    }
+    #endpoint-detail-content .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    .modal-header {
+        border-bottom: none;
+    }
+    .modal-body {
+        padding: 0.5rem !important;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/error_logger.js"></script>
+<script>
+    const socket = io();
+    let currentDetailExt = null;
+    const endpointDetailModal = new bootstrap.Modal(document.getElementById('endpointDetailModal'));
+
+    function getStatusClass(deviceState, contactsRegistered) {
+        if (deviceState?.toLowerCase() === 'not in use') {
+            return 'status-available';
+        }
+        if (deviceState?.toLowerCase() === 'unavailable') {
+            return 'status-unavailable';
+        }
+        if (parseInt(contactsRegistered) > 0) {
+            return 'status-available';
+        }
+        return 'status-unknown';
+    }
+
+    function createEndpointCard(endpoint) {
+        console.log('Creating card for endpoint:', endpoint);
+        
+        const extension = endpoint.extension || '';
+        const exists_in_config = endpoint.exists_in_config || false;
+        const details = endpoint.details || {};
+        
+        // Get status information
+        const deviceState = details.endpoint?.DeviceState || 'Unknown';
+        const contactsRegistered = parseInt(details.aor?.ContactsRegistered || '0');
+        const totalContacts = parseInt(details.aor?.Contacts || '0');
+        const maxContacts = parseInt(details.aor?.MaxContacts || '0');
+        
+        const statusClass = getStatusClass(deviceState, contactsRegistered);
+        const status = deviceState || 'Unknown';
+        
+        return `
+            <div class="col-md-4 mb-3" id="endpoint-${extension}">
+                <div class="card endpoint-card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <span class="endpoint-status ${statusClass}"></span>
+                            Extension ${extension}
+                        </h5>
+                        <p class="card-text">
+                            Status: ${status}<br>
+                            Config: ${exists_in_config ? 'Configured' : 'Not Configured'}<br>
+                            Contacts: ${contactsRegistered}/${maxContacts}
+                        </p>
+                        <button class="btn btn-primary btn-sm view-details" data-extension="${extension}">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function formatDetailSection(title, data, important = []) {
+        if (!data || Object.keys(data).length === 0) return '';
+        
+        let html = `<div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">${title}</h5>
+            </div>
+            <div class="card-body p-2">
+                <div class="row g-2">`;
+        
+        // Show all fields in a grid layout
+        Object.entries(data).forEach(([key, value]) => {
+            if (important.includes(key)) {
+                html += `
+                    <div class="col-6">
+                        <div class="d-flex align-items-center bg-light rounded p-1">
+                            <i class="fas fa-circle me-2 small"></i>
+                            <div class="flex-grow-1">
+                                <div class="text-muted small">${key.replace(/_/g, ' ')}</div>
+                                <div class="fw-medium">${value}</div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+        });
+        
+        html += '</div></div></div>';
+        return html;
+    }
+
+    function updateEndpointDetails(extension, data) {
+        if (currentDetailExt === extension) {
+            const detailContent = document.getElementById('endpoint-detail-content');
+            let html = '';
+            
+            // Find the relevant events in the response
+            const events = {};
+            if (data.details) {
+                Object.entries(data.details).forEach(([key, value]) => {
+                    events[key] = value;
+                });
+            }
+            
+            // Function to format timestamp
+            function formatTimestamp(timestamp) {
+                if (!timestamp || timestamp === 'N/A') return 'N/A';
+                const date = new Date(timestamp * 1000);
+                return date.toLocaleString();
+            }
+
+            // Combine all status information
+            const statusInfo = {
+                'status': events.endpoint?.DeviceState || 'Unknown',
+                'ip': events.contact?.ViaAddress || 'Not registered',
+                'transport': events.contact?.Transport || 'Unknown',
+                'contacts': (events.aor?.ContactsRegistered || '0') + '/' + (events.aor?.MaxContacts || '0'),
+                'user agent': events.contact?.UserAgent || 'Unknown',
+                'last reg.': formatTimestamp(events.contact?.RegExpire),
+                'codecs': events.endpoint?.Allow?.split(',')[0] || 'undefined',
+                'user': events.auth?.Username || 'undefined'
+            };
+            
+            html += formatDetailSection('Extension Status', statusInfo, 
+                ['status', 'ip', 'transport', 'contacts', 'user agent', 'last reg.', 'codecs', 'user']);
+            
+            detailContent.innerHTML = html || '<div class="alert alert-warning">No details available</div>';
+        }
+    }
+
+    socket.on('connect', () => {
+        console.log('Connected to server');
+    });
+
+    // Keep track of the last known state of endpoints
+    let lastKnownEndpoints = new Map();
+
+    socket.on('endpoints_update', (data) => {
+        console.log('Received endpoints update:', data);
+        const container = document.getElementById('endpoints-container');
+        
+        if (!data || !data.endpoints || !Array.isArray(data.endpoints)) {
+            errorLogger.logError('EndpointsUpdate', 'Invalid endpoints data received', { data });
+            return;
+        }
+
+        try {
+            // Create HTML for all endpoints
+            const endpointsHtml = data.endpoints
+                .map(endpoint => {
+                    try {
+                        return createEndpointCard(endpoint);
+                    } catch (err) {
+                        errorLogger.logError('CreateEndpointCard', err, { endpoint });
+                        return '';
+                    }
+                })
+                .filter(html => html)
+                .join('');
+
+            container.innerHTML = endpointsHtml || '<div class="alert alert-warning">No extensions found</div>';
+
+            // Reattach event listeners
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const extension = e.target.dataset.extension;
+                    currentDetailExt = extension;
+                    
+                    // Show modal with loading state
+                    document.getElementById('endpoint-detail-content').innerHTML = 
+                        '<div class="text-center"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Loading details...</p></div>';
+                    endpointDetailModal.show();
+                    
+                    // Fetch detailed information
+                    try {
+                        const response = await fetch(`/endpoints/${extension}`);
+                        const detailData = await response.json();
+                        if (detailData.status === 'success') {
+                            updateEndpointDetails(extension, detailData);
+                        } else {
+                            document.getElementById('endpoint-detail-content').innerHTML = 
+                                '<div class="alert alert-danger">Failed to load extension details</div>';
+                            errorLogger.logError('FetchEndpointDetails', new Error(detailData.message || 'Unknown error'), { extension });
+                        }
+                    } catch (err) {
+                        document.getElementById('endpoint-detail-content').innerHTML = 
+                            '<div class="alert alert-danger">Error loading extension details</div>';
+                        errorLogger.logError('FetchEndpointDetails', err, { extension });
+                    }
+                });
+            });
+        } catch (err) {
+            errorLogger.logError('ProcessEndpointsUpdate', err);
+            container.innerHTML = '<div class="alert alert-danger">Error loading extensions</div>';
+        }
+    });
+
+    // Handle modal close
+    document.getElementById('endpointDetailModal').addEventListener('hidden.bs.modal', () => {
+        currentDetailExt = null;
+    });
+</script>
+{% endblock %}

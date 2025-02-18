@@ -1,0 +1,214 @@
+#Only for ext 100 not in use
+##################################################NOT IN USE##################################################
+Asterisk Call Manager/11.0.0
+Response: Success
+Message: Authentication accepted
+
+Event: FullyBooted
+Privilege: system,all
+Uptime: 3810
+LastReload: 3810
+Status: Fully Booted
+
+Response: Success
+EventList: start
+Message: Following are Events for each object associated with the Endpoint
+
+Event: EndpointDetail
+ObjectType: endpoint
+ObjectName: 100
+RpidImmediate: false
+Webrtc: no
+Ignore183WithoutSdp: false
+SendAoc: false
+DeviceStateBusyAt: 0
+T38UdptlMaxdatagram: 0
+CodecPrefsIncomingAnswer: prefer:pending, operation:intersect, keep:all, transcode:allow
+SecurityNegotiation: no
+DtlsRekey: 0
+NamedPickupGroup: 
+DirectMediaMethod: invite
+SendRpid: false
+PickupGroup: 
+SdpSession: Asterisk
+DtlsVerify: No
+MessageContext: 
+Tenantid: 
+Mailboxes: 
+RecordOnFeature: automixmon
+DtlsPrivateKey: 
+DtlsFingerprint: SHA-256
+OverlapContext: 
+OutgoingCallOfferPref: remote_merge
+FromDomain: 
+TimersSessExpires: 1800
+NamedCallGroup: 
+DtlsCipher: 
+MediaEncryptionOptimistic: false
+SuppressQ850ReasonHeaders: false
+Aors: 100
+IdentifyBy: username,ip
+CalleridPrivacy: allowed_not_screened
+MwiSubscribeReplacesUnsolicited: no
+CosAudio: 0
+FollowEarlyMediaFork: true
+Context: internal
+RtpSymmetric: false
+Transport: 
+MohSuggest: default
+T38Udptl: false
+FaxDetect: false
+T38BindUdptlToMediaAddress: false
+TosVideo: 0
+SrtpTag32: false
+ReferBlindProgress: true
+MaxAudioStreams: 1
+Bundle: false
+UseAvpf: false
+CallGroup: 
+SendConnectedLine: yes
+FaxDetectTimeout: 0
+SdpOwner: -
+ForceRport: true
+CalleridTag: 
+RtpTimeoutHold: 0
+SuppressMohOnSendonly: false
+UsePtime: false
+MediaAddress: 
+VoicemailExtension: 
+RtpTimeout: 0
+StirShaken: no
+SetVar: 
+ContactAcl: 
+PreferredCodecOnly: false
+GeolocOutgoingCallProfile: 
+ForceAvp: false
+RecordOffFeature: automixmon
+FromUser: 
+SendDiversion: true
+SendHistoryInfo: false
+T38UdptlIpv6: false
+ToneZone: 
+Language: 
+AllowSubscribe: true
+RtpIpv6: false
+Callerid: "user100" <100>
+MohPassthrough: false
+CosVideo: 0
+DtlsAutoGenerateCert: No
+AsymmetricRtpCodec: false
+GeolocIncomingCallProfile: 
+IceSupport: false
+AggregateMwi: true
+OneTouchRecording: false
+MwiFromUser: 
+Accountcode: 
+CodecPrefsOutgoingAnswer: prefer:pending, operation:intersect, keep:all, transcode:allow
+Allow: (ulaw|alaw)
+RewriteContact: false
+UserEqPhone: false
+RtpEngine: asterisk
+SubscribeContext: 
+NotifyEarlyInuseRinging: false
+IncomingMwiMailbox: 
+IncomingCallOfferPref: local
+AllowUnauthenticatedOptions: false
+Auth: 100
+DirectMediaGlareMitigation: none
+TrustIdInbound: false
+StirShakenProfile: 
+BindRtpToMediaAddress: false
+DisableDirectMediaOnNat: false
+MediaEncryption: no
+MediaUseReceivedTransport: false
+AllowOverlap: true
+DtmfMode: rfc4733
+OutboundAuth: 
+TosAudio: 0
+DtlsCertFile: 
+DtlsCaPath: 
+DtlsSetup: active
+ConnectedLineMethod: invite
+G726NonStandard: false
+100rel: yes
+Timers: yes
+DirectMedia: true
+Acl: 
+TimersMinSe: 90
+TrustIdOutbound: false
+SubMinExpiry: 0
+RtcpMux: false
+MaxVideoStreams: 1
+AcceptMultipleSdpAnswers: false
+CodecPrefsIncomingOffer: prefer:pending, operation:intersect, keep:all, transcode:allow
+CodecPrefsOutgoingOffer: prefer:pending, operation:union, keep:all, transcode:allow
+TrustConnectedLine: yes
+SendPai: false
+RtpKeepalive: 0
+T38UdptlEc: none
+T38UdptlNat: false
+AllowTransfer: true
+DtlsCaFile: 
+OutboundProxy: 
+InbandProgress: false
+DeviceState: Not in use
+ActiveChannels: 
+
+Event: AuthDetail
+ObjectType: auth
+ObjectName: 100
+OauthSecret: 
+RefreshToken: 
+Username: 100
+Md5Cred: 
+Realm: 
+AuthType: userpass
+Password: 100pass
+NonceLifetime: 32
+OauthClientid: 
+EndpointName: 100
+
+Event: AorDetail
+ObjectType: aor
+ObjectName: 100
+MinimumExpiration: 60
+DefaultExpiration: 3600
+QualifyTimeout: 3.000000
+Mailboxes: 
+SupportPath: false
+RemoveUnavailable: false
+VoicemailExtension: 
+MaxContacts: 1
+AuthenticateQualify: false
+Contacts: 100/sip:100@192.168.0.12:38979;transport=UDP;rinstance=15d9c612231bbb0c
+MaximumExpiration: 7200
+QualifyFrequency: 0
+RemoveExisting: false
+OutboundProxy: 
+TotalContacts: 1
+ContactsRegistered: 1
+EndpointName: 100
+
+Event: ContactStatusDetail
+AOR: 100
+URI: sip:100@192.168.0.12:38979;transport=UDP;rinstance=15d9c612231bbb0c
+UserAgent: Zoiper v2.10.20.5
+RegExpire: 1739819878
+ViaAddress: 192.168.0.12:38979
+CallID: LCZldDi3Dsg-dZR3sg4iwA..
+Status: NonQualified
+RoundtripUsec: N/A
+EndpointName: 100
+ID: 100;@523038aabe510887c5404ee22f250bda
+AuthenticateQualify: 0
+OutboundProxy: 
+Path: 
+QualifyFrequency: 0
+QualifyTimeout: 3.000
+
+Event: EndpointDetailComplete
+EventList: Complete
+ListItems: 4
+
+Response: Goodbye
+Message: Thanks for all the fish.
