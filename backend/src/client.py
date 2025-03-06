@@ -2,9 +2,7 @@
 
 from typing import Dict, List, Optional
 from panoramisk import Manager
-from .utils import *
-from .parser import *
-from .events import broadcast_event  # Import from events.py
+from parser import parse_endpoint_callerid, parse_active_calls
 import logging
 
 # Configure logging
@@ -46,7 +44,7 @@ class AmiClient:
             try:
                 await self.manager.connect()
                 self._connected = True
-                
+                logger.info("Connected to AMI")
                 # Register event handlers
                 if self.event_callback:
                     # Register for each event type separately
@@ -62,8 +60,8 @@ class AmiClient:
             event_data = dict(event)
             await self.event_callback(event_type, event_data)
             # Broadcast the event to Socket.IO clients
-            logger.info(f"Broadcasting event: {event_type}")
-            await broadcast_event(event_type, event_data)
+            #logger.info(f"Broadcasting event: {event_type}")
+            #await broadcast_event(event_type, event_data)
 
     async def close(self):
         """Close AMI connection"""
@@ -72,6 +70,7 @@ class AmiClient:
                 if hasattr(self.manager, 'protocol') and self.manager.protocol:
                     self.manager.protocol.transport.close()
                 self._connected = False
+                logger.info("Disconnected from AMI")
             except Exception as e:
                 raise
 

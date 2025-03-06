@@ -16,7 +16,7 @@ SOCKETIO_SERVER = 'http://127.0.0.1:8000'
 
 # Create Socket.IO client
 sio = socketio.Client(
-    logger=True,
+    logger=False,
     reconnection=True
 )
 
@@ -40,11 +40,15 @@ def message(data):
     print(f"Message received: {data}")
     logger.info(f"Message received: {data}")
 
-@sio.event
-def catch_all(event, data):
-    print(f"Event received: {event} with data: {data}")
-    logger.info(f"Event received: {event} with data: {data}")
-    logger.debug(f"Event details - name: {event}, data type: {type(data)}, content: {data}")
+#@sio.on('*')  # This registers the catch-all handler
+#def catch_all(event, data):
+#    print(f"Event received: {event} with data: {data}")
+#    logger.info(f"Event received: {event} with data: {data}")
+
+@sio.on("DeviceStateChange")
+def handle_device_state_change(data):
+    print(f"DeviceStateChange Event Received: {data}")
+    logger.info(f"DeviceStateChange Event Data: {data}")
 
 
 def main():

@@ -15,10 +15,10 @@ cd $FRONTEND_DIR
 source $VENV_DIR/bin/activate
 
 # Install requirements if requirements.txt exists
-if [ -f "$FRONTEND_DIR/requirements.txt" ]; then
-    echo "Installing dependencies..."
-    pip install -r $FRONTEND_DIR/requirements.txt
-fi
+#if [ -f "$FRONTEND_DIR/requirements.txt" ]; then
+#    echo "Installing dependencies..."
+#    pip install -r $FRONTEND_DIR/requirements.txt
+#fi
 
 
 
