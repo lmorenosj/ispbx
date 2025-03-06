@@ -13,7 +13,7 @@ os.makedirs(LOGS_DIR, exist_ok=True)
 os.chdir(BACKEND_DIR)
 
 # Now import ami_client after setting up paths
-from ami import AmiClient
+from ami.client import AmiClient
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

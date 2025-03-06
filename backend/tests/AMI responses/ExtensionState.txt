@@ -1,0 +1,21 @@
+Asterisk Call Manager/11.0.0
+Response: Success
+Message: Authentication accepted
+
+Event: FullyBooted
+Privilege: system,all
+Uptime: 4268
+LastReload: 4268
+Status: Fully Booted
+
+Response: Success
+Message: Extension Status
+Exten: 100
+Context: default
+Hint: 
+Status: -1
+StatusText: Unknown
+
+Response: Goodbye
+Message: Thanks for all the fish.
+

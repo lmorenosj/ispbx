@@ -1,5 +1,5 @@
 
-#Durin a call
+#During a call
 ubuntu@ubuntu:~/Documents/ispbx$ bash backend/tests/run_amitest_raw.sh 
 Asterisk Call Manager/11.0.0
 Response: Success
@@ -43,3 +43,6 @@ ListItems: 2
 
 Response: Goodbye
 Message: Thanks for all the fish.
+
+#With only one endpoint online
+
