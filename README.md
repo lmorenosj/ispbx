@@ -38,6 +38,63 @@ python src/main.py
 
 The API will be available at http://localhost:8000
 
+## Frontend Setup
+
+The frontend is a Flask-based web application that provides a user-friendly interface to interact with the backend API.
+
+1. Create a virtual environment:
+```bash
+cd frontend
+python -m venv venv
+source venv/bin/activate
+```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Run the application:
+```bash
+python app.py
+# Or use the provided script
+./run_frontend.sh
+```
+
+The web interface will be available at http://localhost:5000
+
+### Frontend Technologies
+
+- **Flask**: Web application framework
+- **Flask-SocketIO**: Real-time WebSocket communication
+- **Flask-WTF**: Form handling and validation
+- **Bootstrap**: UI components and responsive design
+
+### Frontend Structure
+
+```
+frontend/
+├── app.py                  # Main application file
+├── requirements.txt        # Python dependencies
+├── run_frontend.sh         # Script to run the application
+├── static/                 # Static assets (CSS, JS, images)
+│   ├── css/                # Stylesheets
+│   ├── js/                 # JavaScript files
+│   └── img/                # Images
+└── templates/              # HTML templates
+    ├── base.html           # Base template with common layout
+    ├── dashboard.html      # Main dashboard view
+    ├── endpoints.html      # Endpoint management view
+    └── settings.html       # Configuration settings
+```
+
+### Features
+
+- Real-time endpoint status monitoring via WebSockets
+- Configuration editing for PJSIP endpoints
+- User-friendly interface for managing Asterisk PJSIP configuration
+- Automatic synchronization with backend changes
+
 ## Configuration Files
 
 ### pjsip_detail.ini

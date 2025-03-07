@@ -85,8 +85,8 @@ async def root():
         "version": "1.0.0"
     }
 
-@app.get("/endpoints")
-@app.get("/endpoints/{extension}")
+@app.get("/api/endpoints")
+@app.get("/api/endpoints/{extension}")
 async def get_pjsip_details(extension: Optional[str] = None):
     """Get details for all or a specific PJSIP endpoint"""
     try:

@@ -1,0 +1,63 @@
+body {
+    padding-top: 2rem;
+    background-color: #f8f9fa;
+}
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+.card-header {
+    background-color: #343a40;
+    color: white;
+    font-weight: bold;
+}
+.table th {
+    background-color: #f2f2f2;
+}
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+.status-not-in-use {
+    background-color: #28a745;
+}
+.status-unavailable {
+    background-color: #dc3545;
+}
+.status-busy {
+    background-color: #ffc107;
+}
+.table-responsive {
+    max-height: 70vh;
+}
+.endpoint-row {
+    transition: background-color 0.3s ease;
+}
+.endpoint-row.updated {
+    animation: highlight 2s;
+}
+@keyframes highlight {
+    0% { background-color: rgba(255, 255, 140, 0.8); }
+    100% { background-color: transparent; }
+}
+#refresh-indicator {
+    display: none;
+    color: #007bff;
+    margin-left: 10px;
+}
+.connection-status {
+    font-size: 0.9rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+.connection-connected {
+    background-color: #d4edda;
+    color: #155724;
+}
+.connection-disconnected {
+    background-color: #f8d7da;
+    color: #721c24;
+}
