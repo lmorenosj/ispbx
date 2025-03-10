@@ -178,5 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const socket = initializeSocketConnection();
     
     // Poll for updates every 30 seconds as a fallback
-    setInterval(fetchEndpoints, 30000);
+    //
+    // 
+    // setInterval(fetchEndpoints, 30000);
 });

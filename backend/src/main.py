@@ -12,8 +12,7 @@ from client import AmiClient
 from events import sio, broadcast_event  # Import from events.py
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
-api_logger = logging.getLogger("api_logger")
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -105,13 +104,13 @@ async def get_pjsip_details(extension: Optional[str] = None):
         }
         
         # Log the request
-        api_logger.info(f"Request: endpoint=/endpoints/{extension if extension else ''}, method=GET, params={{'extension': extension}}, status_code=200")
+        logger.info(f"Request: endpoint=/endpoints/{extension if extension else ''}, method=GET, params={{'extension': extension}}, status_code=200")
         return response
     except HTTPException:
         raise
     except Exception as e:
         # Log error for the specific endpoint or general endpoint retrieval
-        api_logger.error(f"Error getting PJSIP details: {e}")
+        logger.error(f"Error getting PJSIP details: {e}")
         raise HTTPException(status_code=500, detail="Failed to get endpoint details")
 
 # Expose socket_app for uvicorn
