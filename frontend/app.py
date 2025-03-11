@@ -38,10 +38,13 @@ def connect():
     logger.info("Connected to Socket.IO server")
 
 @sio_client.on('DeviceStateChange')
+@sio_client.on('Newchannel')
+@sio_client.on('DialState')
+@sio_client.on('DialEnd')
+@sio_client.on('Hangup')
 def deviceStateChange_handler(data):
-    
-    socketio_app.emit('DeviceStateChange', data)
-    logger.info(f"Emitting DeviceStateChange event to front: {data}")
+    socketio_app.emit('EndpointStateChange', data)
+    logger.info(f"Emitting EndpointStateChange event to front: {data}")
 
 @sio_client.event
 def connect_error(data):

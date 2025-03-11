@@ -16,10 +16,12 @@ body {
 }
 .status-indicator {
     display: inline-block;
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     margin-right: 6px;
+    vertical-align: middle;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
 }
 .status-not-in-use {
     background-color: #28a745;
@@ -52,6 +54,12 @@ body {
     font-size: 0.9rem;
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.connection-status i {
+    margin-right: 5px;
 }
 .connection-connected {
     background-color: #d4edda;
@@ -60,4 +68,87 @@ body {
 .connection-disconnected {
     background-color: #f8d7da;
     color: #721c24;
+}
+
+/* Call status indicators */
+.status-indicator.status-calling {
+    background-color: #ff9900;
+}
+
+.status-indicator.status-ringing {
+    background-color: #ffcc00;
+    animation: blink 1s infinite;
+}
+
+.status-indicator.status-connected {
+    background-color: #00cc66;
+}
+
+/* State container with icons */
+.state-container {
+    display: inline-flex;
+    align-items: center;
+}
+
+.state-container i {
+    margin-right: 4px;
+    color: #555;
+}
+
+/* Special colors for each status icon */
+.status-not-in-use ~ i.bi-telephone-x {
+    color: #28a745;
+}
+
+.status-busy ~ i.bi-telephone-minus {
+    color: #ffc107;
+}
+
+.status-unavailable ~ i.bi-dash-circle {
+    color: #dc3545;
+}
+
+.status-calling ~ i.bi-telephone-outbound {
+    color: #ff9900;
+}
+
+.status-ringing ~ i.bi-telephone-vibrate {
+    color: #ffcc00;
+}
+
+.status-connected ~ i.bi-headset {
+    color: #00cc66;
+}
+
+.call-direction {
+    font-size: 0.85em;
+    color: #666;
+    margin-left: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.call-direction i {
+    color: #0d6efd;
+    margin-right: 3px;
+}
+
+.call-duration {
+    font-size: 0.85em;
+    color: #009966;
+    margin-left: 8px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+}
+
+.call-duration i {
+    color: #009966;
+    margin-right: 3px;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
 }

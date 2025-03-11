@@ -49,10 +49,7 @@ class AmiClient:
                 if self.event_callback:
                     # Register for each event type separately
                     for event in [
-                        'DeviceStateChange', 'Newchannel', 'Hangup', 'Bridge', 'Dial', 'Newstate', 
-                        'BridgeEnter', 'BridgeLeave', 'DialBegin', 'DialEnd', 'Newexten',
-                        'RTCPReceived', 'RTCPSent', 'ContactStatus', 'PeerStatus', 'ChannelTalkingStart',
-                        'ChannelTalkingStop', 'CoreShowChannel', 'ChannelUpdate'
+                        'DeviceStateChange', 'Newchannel', 'DialState', 'Newstate', 'DialEnd', 'Hangup'
                     ]:
                         self.manager.register_event(event, self._handle_event)
                     # Log successful registration
