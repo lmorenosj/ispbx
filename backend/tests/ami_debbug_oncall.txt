@@ -1,0 +1,2719 @@
+ubuntu@ubuntu:~/Documents/ispbx$ sudo rasterisk
+Asterisk 22.1.1, Copyright (C) 1999 - 2022, Sangoma Technologies Corporation and others.
+Created by Mark Spencer <markster@digium.com>
+Asterisk comes with ABSOLUTELY NO WARRANTY; type 'core show warranty' for details.
+This is free software, with components licensed under the GNU General Public
+License version 2 and other licenses; you are welcome to redistribute it under
+certain conditions. Type 'core show license' for details.
+=========================================================================
+Connected to Asterisk 22.1.1 currently running on ubuntu (pid = 2953)
+ubuntu*CLI> manager set debug on
+<--- Examining AMI action: -->
+Action: Ping
+ActionID: action/9c55dc2f-29c9-44b8-99e4-b1970b0740e4/1/64
+
+<--- Examining AMI action: -->
+Action: Ping
+ActionID: action/9c55dc2f-29c9-44b8-99e4-b1970b0740e4/1/65
+
+<-- Examining AMI event (1059888234): -->
+Event: ChallengeSent
+Privilege: security,all
+Timestamp: 1741614725.201721
+SequenceNumber: 2673
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+EventTV: 2025-03-10T14:52:05.201+0100
+Severity: Informational
+Service: PJSIP
+EventVersion: 1
+AccountID: 101
+SessionID: B61vY9nQtqm4P8v93mJchA..
+LocalAddress: IPV4/UDP/192.168.0.19/5060
+RemoteAddress: IPV4/UDP/192.168.0.22/61696
+Challenge: 
+
+
+<-- Examining AMI event (1310502545): -->
+Event: SuccessfulAuth
+Privilege: security,all
+Timestamp: 1741614725.334859
+SequenceNumber: 2674
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+EventTV: 2025-03-10T14:52:05.334+0100
+Severity: Informational
+Service: PJSIP
+EventVersion: 1
+AccountID: 101
+SessionID: B61vY9nQtqm4P8v93mJchA..
+LocalAddress: IPV4/UDP/192.168.0.19/5060
+RemoteAddress: IPV4/UDP/192.168.0.22/61696
+UsingPassword: 1
+
+
+<-- Examining AMI event (1754218554): -->
+Event: Newchannel
+Privilege: call,all
+Timestamp: 1741614725.335807
+SequenceNumber: 2675
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/101-00000032
+ChannelState: 4
+ChannelStateDesc: Ring
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 1
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.335866
+SequenceNumber: 2676
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 4
+ChannelStateDesc: Ring
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 1
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: SIPDOMAIN
+Value: 192.168.0.19
+
+
+<-- Examining AMI event (426736699): -->
+Event: Newexten
+Privilege: dialplan,all
+Timestamp: 1741614725.335904
+SequenceNumber: 2677
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/101-00000032
+ChannelState: 4
+ChannelStateDesc: Ring
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 1
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Extension: 100
+Application: Answer
+AppData: 
+
+
+<-- Examining AMI event (411560654): -->
+Event: Newstate
+Privilege: call,all
+Timestamp: 1741614725.336455
+SequenceNumber: 2678
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 1
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (552698796): -->
+Event: DeviceStateChange
+Privilege: call,all
+Timestamp: 1741614725.336477
+SequenceNumber: 2679
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Device: PJSIP/101
+State: INUSE
+
+
+<-- Examining AMI event (426736699): -->
+Event: Newexten
+Privilege: dialplan,all
+Timestamp: 1741614725.657888
+SequenceNumber: 2680
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Extension: 100
+Application: Dial
+AppData: PJSIP/100,20
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.657952
+SequenceNumber: 2681
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: DIALSTATUS
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.657969
+SequenceNumber: 2682
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: DIALEDPEERNUMBER
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.657986
+SequenceNumber: 2683
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: DIALEDPEERNAME
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.658001
+SequenceNumber: 2684
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: ANSWEREDTIME
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.658017
+SequenceNumber: 2685
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: ANSWEREDTIME_MS
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.658032
+SequenceNumber: 2686
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: DIALEDTIME
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.658048
+SequenceNumber: 2687
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: DIALEDTIME_MS
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.658064
+SequenceNumber: 2688
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RINGTIME
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.658083
+SequenceNumber: 2689
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RINGTIME_MS
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.658101
+SequenceNumber: 2690
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: PROGRESSTIME
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.658118
+SequenceNumber: 2691
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: PROGRESSTIME_MS
+Value: 
+
+
+<-- Examining AMI event (1754218554): -->
+Event: Newchannel
+Privilege: call,all
+Timestamp: 1741614725.658581
+SequenceNumber: 2692
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/100-00000033
+ChannelState: 0
+ChannelStateDesc: Down
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: s
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614725.658635
+SequenceNumber: 2693
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 0
+ChannelStateDesc: Down
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: s
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: DIALEDPEERNUMBER
+Value: 100
+
+
+<-- Examining AMI event (426736699): -->
+Event: Newexten
+Privilege: dialplan,all
+Timestamp: 1741614725.658656
+SequenceNumber: 2694
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/100-00000033
+ChannelState: 0
+ChannelStateDesc: Down
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Extension: 100
+Application: AppDial
+AppData: (Outgoing Line)
+
+
+<-- Examining AMI event (633180392): -->
+Event: NewConnectedLine
+Privilege: call,all
+Timestamp: 1741614725.658671
+SequenceNumber: 2695
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/100-00000033
+ChannelState: 0
+ChannelStateDesc: Down
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (2047349858): -->
+Event: DialBegin
+Privilege: call,all
+Timestamp: 1741614725.658730
+SequenceNumber: 2696
+File: manager_channels.c
+Line: 1228
+Func: channel_dial_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: <unknown>
+ConnectedLineName: <unknown>
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+DestChannel: PJSIP/100-00000033
+DestChannelState: 0
+DestChannelStateDesc: Down
+DestCallerIDNum: 100
+DestCallerIDName: user100
+DestConnectedLineNum: 101
+DestConnectedLineName: user101
+DestLanguage: en
+DestAccountCode: 
+DestContext: internal
+DestExten: 100
+DestPriority: 1
+DestUniqueid: 1741614725.99
+DestLinkedid: 1741614725.98
+DialString: 100
+
+
+<-- Examining AMI event (633180392): -->
+Event: NewConnectedLine
+Privilege: call,all
+Timestamp: 1741614725.659331
+SequenceNumber: 2697
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (411560654): -->
+Event: Newstate
+Privilege: call,all
+Timestamp: 1741614726.101990
+SequenceNumber: 2698
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/100-00000033
+ChannelState: 5
+ChannelStateDesc: Ringing
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (552698796): -->
+Event: DeviceStateChange
+Privilege: call,all
+Timestamp: 1741614726.102034
+SequenceNumber: 2699
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Device: PJSIP/100
+State: RINGING
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614726.102066
+SequenceNumber: 2700
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RINGTIME
+Value: 0
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614726.102088
+SequenceNumber: 2701
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RINGTIME_MS
+Value: 443
+
+
+<-- Examining AMI event (2057634482): -->
+Event: DialState
+Privilege: call,all
+Timestamp: 1741614726.102162
+SequenceNumber: 2702
+File: manager_channels.c
+Line: 1238
+Func: channel_dial_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+DestChannel: PJSIP/100-00000033
+DestChannelState: 5
+DestChannelStateDesc: Ringing
+DestCallerIDNum: 100
+DestCallerIDName: user100
+DestConnectedLineNum: 101
+DestConnectedLineName: user101
+DestLanguage: en
+DestAccountCode: 
+DestContext: internal
+DestExten: 100
+DestPriority: 1
+DestUniqueid: 1741614725.99
+DestLinkedid: 1741614725.98
+DialStatus: RINGING
+
+
+<-- Examining AMI event (1663271039): -->
+Event: RTCPReceived
+Privilege: reporting,all
+Timestamp: 1741614727.283082
+SequenceNumber: 2703
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+To: 192.168.0.19:15993
+From: 192.168.0.22:52973
+RTT: 0.0000
+MES: 88.1
+SSRC: 0x50e8db77
+PT: 201(RR)
+ReportCount: 1
+Report0SourceSSRC: 0x50e8db77
+Report0FractionLost: 0
+Report0CumulativeLost: 0
+Report0HighestSequence: 18027
+Report0SequenceNumberCycles: 0
+Report0IAJitter: 0
+Report0LSR: 0
+Report0DLSR: 0.0000
+
+
+<-- Examining AMI event (1340277052): -->
+Event: RTCPSent
+Privilege: reporting,all
+Timestamp: 1741614730.393367
+SequenceNumber: 2704
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+To: 192.168.0.22:52974
+From: 192.168.0.19:15993
+MES: 88.1
+SSRC: 0x50e8db77
+PT: 200(SR)
+ReportCount: 1
+SentNTP: 1741614730.393111
+SentRTP: 34240
+SentPackets: 214
+SentOctets: 34240
+Report0SourceSSRC: 0x5e1c5fa2
+Report0FractionLost: 0
+Report0CumulativeLost: 0
+Report0HighestSequence: 11240
+Report0SequenceNumberCycles: 0
+Report0IAJitter: 79
+Report0LSR: 0
+Report0DLSR: 0.0000
+
+
+<-- Examining AMI event (1663271039): -->
+Event: RTCPReceived
+Privilege: reporting,all
+Timestamp: 1741614732.963120
+SequenceNumber: 2705
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+To: 192.168.0.19:15993
+From: 192.168.0.22:52973
+RTT: 0.0000
+MES: 87.2
+SSRC: 0x50e8db77
+PT: 201(RR)
+ReportCount: 1
+Report0SourceSSRC: 0x50e8db77
+Report0FractionLost: 1
+Report0CumulativeLost: 2
+Report0HighestSequence: 18311
+Report0SequenceNumberCycles: 0
+Report0IAJitter: 0
+Report0LSR: 0
+Report0DLSR: 0.0000
+
+
+<--- Examining AMI action: -->
+Action: Ping
+ActionID: action/9c55dc2f-29c9-44b8-99e4-b1970b0740e4/1/66
+
+<-- Examining AMI event (1340277052): -->
+Event: RTCPSent
+Privilege: reporting,all
+Timestamp: 1741614735.393646
+SequenceNumber: 2706
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+To: 192.168.0.22:52974
+From: 192.168.0.19:15993
+MES: 88.1
+SSRC: 0x50e8db77
+PT: 200(SR)
+ReportCount: 1
+SentNTP: 1741614735.393405
+SentRTP: 74240
+SentPackets: 464
+SentOctets: 74240
+Report0SourceSSRC: 0x5e1c5fa2
+Report0FractionLost: 0
+Report0CumulativeLost: 0
+Report0HighestSequence: 11490
+Report0SequenceNumberCycles: 0
+Report0IAJitter: 77
+Report0LSR: 0
+Report0DLSR: 0.0000
+
+
+<-- Examining AMI event (411560654): -->
+Event: Newstate
+Privilege: call,all
+Timestamp: 1741614736.235014
+SequenceNumber: 2707
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.235065
+SequenceNumber: 2708
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: DIALSTATUS
+Value: ANSWER
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.235082
+SequenceNumber: 2709
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: DIALEDPEERNAME
+Value: PJSIP/100-00000033
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.235096
+SequenceNumber: 2710
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: DIALEDPEERNUMBER
+Value: 100
+
+
+<-- Examining AMI event (552698796): -->
+Event: DeviceStateChange
+Privilege: call,all
+Timestamp: 1741614736.235107
+SequenceNumber: 2711
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Device: PJSIP/100
+State: INUSE
+
+
+<-- Examining AMI event (2013288170): -->
+Event: DialEnd
+Privilege: call,all
+Timestamp: 1741614736.235124
+SequenceNumber: 2712
+File: manager_channels.c
+Line: 1238
+Func: channel_dial_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+DestChannel: PJSIP/100-00000033
+DestChannelState: 6
+DestChannelStateDesc: Up
+DestCallerIDNum: 100
+DestCallerIDName: user100
+DestConnectedLineNum: 101
+DestConnectedLineName: user101
+DestLanguage: en
+DestAccountCode: 
+DestContext: internal
+DestExten: 
+DestPriority: 1
+DestUniqueid: 1741614725.99
+DestLinkedid: 1741614725.98
+DialStatus: ANSWER
+
+
+<-- Examining AMI event (1386572318): -->
+Event: BridgeCreate
+Privilege: call,all
+Timestamp: 1741614736.235143
+SequenceNumber: 2713
+File: manager_bridges.c
+Line: 356
+Func: bridge_snapshot_update
+BridgeUniqueid: fb162726-a96a-4872-a3c3-630d8b121e84
+BridgeType: basic
+BridgeTechnology: simple_bridge
+BridgeCreator: <unknown>
+BridgeName: <unknown>
+BridgeNumChannels: 0
+BridgeVideoSourceMode: none
+
+
+<-- Examining AMI event (426736699): -->
+Event: Newexten
+Privilege: dialplan,all
+Timestamp: 1741614736.235288
+SequenceNumber: 2714
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Extension: 
+Application: AppDial
+AppData: (Outgoing Line)
+
+
+<-- Examining AMI event (1346023890): -->
+Event: BridgeEnter
+Privilege: call,all
+Timestamp: 1741614736.235338
+SequenceNumber: 2715
+File: manager_bridges.c
+Line: 413
+Func: channel_enter_cb
+BridgeUniqueid: fb162726-a96a-4872-a3c3-630d8b121e84
+BridgeType: basic
+BridgeTechnology: simple_bridge
+BridgeCreator: <unknown>
+BridgeName: <unknown>
+BridgeNumChannels: 1
+BridgeVideoSourceMode: none
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (1346023890): -->
+Event: BridgeEnter
+Privilege: call,all
+Timestamp: 1741614736.235501
+SequenceNumber: 2716
+File: manager_bridges.c
+Line: 413
+Func: channel_enter_cb
+BridgeUniqueid: fb162726-a96a-4872-a3c3-630d8b121e84
+BridgeType: basic
+BridgeTechnology: simple_bridge
+BridgeCreator: <unknown>
+BridgeName: <unknown>
+BridgeNumChannels: 2
+BridgeVideoSourceMode: none
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.235731
+SequenceNumber: 2717
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: PJSIP/100-00000033
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.235837
+SequenceNumber: 2718
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: 2ae9b45a-0910-4f61-913c-2d70c2b42ae7
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.235928
+SequenceNumber: 2719
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: PJSIP/101-00000032
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.235957
+SequenceNumber: 2720
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: B61vY9nQtqm4P8v93mJchA..
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.236047
+SequenceNumber: 2721
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: PJSIP/100-00000033
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.236074
+SequenceNumber: 2722
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: 2ae9b45a-0910-4f61-913c-2d70c2b42ae7
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.236097
+SequenceNumber: 2723
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: PJSIP/101-00000032
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.236124
+SequenceNumber: 2724
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: B61vY9nQtqm4P8v93mJchA..
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.236154
+SequenceNumber: 2725
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: PJSIP/100-00000033
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.236177
+SequenceNumber: 2726
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: 2ae9b45a-0910-4f61-913c-2d70c2b42ae7
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.236200
+SequenceNumber: 2727
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: PJSIP/101-00000032
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.236227
+SequenceNumber: 2728
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: B61vY9nQtqm4P8v93mJchA..
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.247705
+SequenceNumber: 2729
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: PJSIP/100-00000033
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.247749
+SequenceNumber: 2730
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: 2ae9b45a-0910-4f61-913c-2d70c2b42ae7
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.247767
+SequenceNumber: 2731
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: PJSIP/101-00000032
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.247778
+SequenceNumber: 2732
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: B61vY9nQtqm4P8v93mJchA..
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.250898
+SequenceNumber: 2733
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: PJSIP/100-00000033
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.250931
+SequenceNumber: 2734
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: 2ae9b45a-0910-4f61-913c-2d70c2b42ae7
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.250955
+SequenceNumber: 2735
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: PJSIP/101-00000032
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614736.250973
+SequenceNumber: 2736
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: B61vY9nQtqm4P8v93mJchA..
+
+
+<-- Examining AMI event (1059888234): -->
+Event: ChallengeSent
+Privilege: security,all
+Timestamp: 1741614738.107503
+SequenceNumber: 2737
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+EventTV: 2025-03-10T14:52:18.107+0100
+Severity: Informational
+Service: PJSIP
+EventVersion: 1
+AccountID: 101
+SessionID: K96tef6YcWPPlIb-wAB9pg..
+LocalAddress: IPV4/UDP/192.168.0.19/5060
+RemoteAddress: IPV4/UDP/192.168.0.22/61696
+Challenge: 
+
+
+<-- Examining AMI event (1310502545): -->
+Event: SuccessfulAuth
+Privilege: security,all
+Timestamp: 1741614738.238780
+SequenceNumber: 2738
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+EventTV: 2025-03-10T14:52:18.238+0100
+Severity: Informational
+Service: PJSIP
+EventVersion: 1
+AccountID: 101
+SessionID: K96tef6YcWPPlIb-wAB9pg..
+LocalAddress: IPV4/UDP/192.168.0.19/5060
+RemoteAddress: IPV4/UDP/192.168.0.22/61696
+UsingPassword: 1
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458133
+SequenceNumber: 2739
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOS
+Value: ssrc=1357437815;themssrc=1578917794;lp=0;rxjitter=0.000000;rxcount=416;txjitter=0.007250;txcount=506;rlp=0;rtt=0.000000;rxmes=0.000000;txmes=88.087886
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458204
+SequenceNumber: 2740
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSBRIDGED
+Value: ssrc=1357437815;themssrc=1578917794;lp=0;rxjitter=0.000000;rxcount=416;txjitter=0.007250;txcount=506;rlp=0;rtt=0.000000;rxmes=0.000000;txmes=88.087886
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458226
+SequenceNumber: 2741
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSJITTER
+Value: minrxjitter=000.000000;maxrxjitter=000.007250;avgrxjitter=000.007250;stdevrxjitter=000.000000;mintxjitter=000.000000;maxtxjitter=000.000000;avgtxjitter=000.000000;stdevtxjitter=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458258
+SequenceNumber: 2742
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSJITTERBRIDGED
+Value: minrxjitter=000.000000;maxrxjitter=000.007250;avgrxjitter=000.007250;stdevrxjitter=000.000000;mintxjitter=000.000000;maxtxjitter=000.000000;avgtxjitter=000.000000;stdevtxjitter=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458323
+SequenceNumber: 2743
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSLOSS
+Value:   minrxlost=000.000000;  maxrxlost=000.000000;  avgrxlost=000.000000;  stdevrxlost=000.000000;  mintxlost=000.000000;  maxtxlost=000.000000;  avgtxlost=000.000000;  stdevtxlost=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458349
+SequenceNumber: 2744
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSLOSSBRIDGED
+Value:   minrxlost=000.000000;  maxrxlost=000.000000;  avgrxlost=000.000000;  stdevrxlost=000.000000;  mintxlost=000.000000;  maxtxlost=000.000000;  avgtxlost=000.000000;  stdevtxlost=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458372
+SequenceNumber: 2745
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSRTT
+Value:      minrtt=000.000000;     maxrtt=000.000000;     avgrtt=000.000000;     stdevrtt=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458394
+SequenceNumber: 2746
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSRTTBRIDGED
+Value:      minrtt=000.000000;     maxrtt=000.000000;     avgrtt=000.000000;     stdevrtt=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458420
+SequenceNumber: 2747
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSMES
+Value:    minrxmes=000.000000;   maxrxmes=000.000000;   avgrxmes=000.000000;   stdevrxmes=000.000000;   mintxmes=000.000000;   maxtxmes=000.000000;   avgtxmes=000.000000;   stdevtxmes=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458446
+SequenceNumber: 2748
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSMESBRIDGED
+Value:    minrxmes=000.000000;   maxrxmes=000.000000;   avgrxmes=000.000000;   stdevrxmes=000.000000;   mintxmes=000.000000;   maxtxmes=000.000000;   avgtxmes=000.000000;   stdevtxmes=000.000000;
+
+
+<-- Examining AMI event (1679088753): -->
+Event: HangupRequest
+Privilege: call,all
+Timestamp: 1741614738.458471
+SequenceNumber: 2749
+File: manager_channels.c
+Line: 776
+Func: channel_hangup_request_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458493
+SequenceNumber: 2750
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458515
+SequenceNumber: 2751
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458549
+SequenceNumber: 2752
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPEER
+Value: 
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458568
+SequenceNumber: 2753
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: BRIDGEPVTCALLID
+Value: 
+
+
+<-- Examining AMI event (1338131329): -->
+Event: BridgeLeave
+Privilege: call,all
+Timestamp: 1741614738.458603
+SequenceNumber: 2754
+File: manager_bridges.c
+Line: 437
+Func: channel_leave_cb
+BridgeUniqueid: fb162726-a96a-4872-a3c3-630d8b121e84
+BridgeType: basic
+BridgeTechnology: native_rtp
+BridgeCreator: <unknown>
+BridgeName: <unknown>
+BridgeNumChannels: 1
+BridgeVideoSourceMode: none
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458626
+SequenceNumber: 2755
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: ANSWEREDTIME
+Value: 13
+
+
+<-- Examining AMI event (1338131329): -->
+Event: BridgeLeave
+Privilege: call,all
+Timestamp: 1741614738.458647
+SequenceNumber: 2756
+File: manager_bridges.c
+Line: 437
+Func: channel_leave_cb
+BridgeUniqueid: fb162726-a96a-4872-a3c3-630d8b121e84
+BridgeType: basic
+BridgeTechnology: native_rtp
+BridgeCreator: <unknown>
+BridgeName: <unknown>
+BridgeNumChannels: 0
+BridgeVideoSourceMode: none
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458675
+SequenceNumber: 2757
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: ANSWEREDTIME_MS
+Value: 13122
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458695
+SequenceNumber: 2758
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: DIALEDTIME
+Value: 13
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458718
+SequenceNumber: 2759
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: DIALEDTIME_MS
+Value: 13122
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458738
+SequenceNumber: 2760
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: DIALSTATUS
+Value: ANSWER
+
+
+<-- Examining AMI event (1139417535): -->
+Event: SoftHangupRequest
+Privilege: call,all
+Timestamp: 1741614738.458753
+SequenceNumber: 2761
+File: manager_channels.c
+Line: 776
+Func: channel_hangup_request_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Cause: 16
+
+
+<-- Examining AMI event (800835064): -->
+Event: BridgeDestroy
+Privilege: call,all
+Timestamp: 1741614738.458886
+SequenceNumber: 2762
+File: manager_bridges.c
+Line: 356
+Func: bridge_snapshot_update
+BridgeUniqueid: fb162726-a96a-4872-a3c3-630d8b121e84
+BridgeType: basic
+BridgeTechnology: native_rtp
+BridgeCreator: <unknown>
+BridgeName: <unknown>
+BridgeNumChannels: 0
+BridgeVideoSourceMode: none
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458952
+SequenceNumber: 2763
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOS
+Value: ssrc=1357437815;themssrc=1578917794;lp=0;rxjitter=0.000000;rxcount=416;txjitter=0.007250;txcount=506;rlp=0;rtt=0.000000;rxmes=0.000000;txmes=88.087886
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.458996
+SequenceNumber: 2764
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSJITTER
+Value: minrxjitter=000.000000;maxrxjitter=000.007250;avgrxjitter=000.007250;stdevrxjitter=000.000000;mintxjitter=000.000000;maxtxjitter=000.000000;avgtxjitter=000.000000;stdevtxjitter=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.459033
+SequenceNumber: 2765
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSLOSS
+Value:   minrxlost=000.000000;  maxrxlost=000.000000;  avgrxlost=000.000000;  stdevrxlost=000.000000;  mintxlost=000.000000;  maxtxlost=000.000000;  avgtxlost=000.000000;  stdevtxlost=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.459057
+SequenceNumber: 2766
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSRTT
+Value:      minrtt=000.000000;     maxrtt=000.000000;     avgrtt=000.000000;     stdevrtt=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.459083
+SequenceNumber: 2767
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSMES
+Value:    minrxmes=000.000000;   maxrxmes=000.000000;   avgrxmes=000.000000;   stdevrxmes=000.000000;   mintxmes=000.000000;   maxtxmes=000.000000;   avgtxmes=000.000000;   stdevtxmes=000.000000;
+
+
+<-- Examining AMI event (911141824): -->
+Event: Hangup
+Privilege: call,all
+Timestamp: 1741614738.459113
+SequenceNumber: 2768
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/101-00000032
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 101
+CallerIDName: user101
+ConnectedLineNum: 100
+ConnectedLineName: user100
+Language: en
+AccountCode: 
+Context: internal
+Exten: 100
+Priority: 2
+Uniqueid: 1741614725.98
+Linkedid: 1741614725.98
+Cause: 16
+Cause-txt: Normal Clearing
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.459285
+SequenceNumber: 2769
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOS
+Value: ssrc=1563511880;themssrc=1150200022;lp=0;rxjitter=0.000000;rxcount=1;txjitter=0.000000;txcount=1;rlp=0;rtt=0.000000;rxmes=0.000000;txmes=0.000000
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.459335
+SequenceNumber: 2770
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSJITTER
+Value: minrxjitter=000.000000;maxrxjitter=000.000000;avgrxjitter=000.000000;stdevrxjitter=000.000000;mintxjitter=000.000000;maxtxjitter=000.000000;avgtxjitter=000.000000;stdevtxjitter=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.459365
+SequenceNumber: 2771
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSLOSS
+Value:   minrxlost=000.000000;  maxrxlost=000.000000;  avgrxlost=000.000000;  stdevrxlost=000.000000;  mintxlost=000.000000;  maxtxlost=000.000000;  avgtxlost=000.000000;  stdevtxlost=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.459389
+SequenceNumber: 2772
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSRTT
+Value:      minrtt=000.000000;     maxrtt=000.000000;     avgrtt=000.000000;     stdevrtt=000.000000;
+
+
+<-- Examining AMI event (993992674): -->
+Event: VarSet
+Privilege: dialplan,all
+Timestamp: 1741614738.459415
+SequenceNumber: 2773
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Variable: RTPAUDIOQOSMES
+Value:    minrxmes=000.000000;   maxrxmes=000.000000;   avgrxmes=000.000000;   stdevrxmes=000.000000;   mintxmes=000.000000;   maxtxmes=000.000000;   avgtxmes=000.000000;   stdevtxmes=000.000000;
+
+
+<-- Examining AMI event (911141824): -->
+Event: Hangup
+Privilege: call,all
+Timestamp: 1741614738.459447
+SequenceNumber: 2774
+File: manager_channels.c
+Line: 717
+Func: channel_snapshot_update
+Channel: PJSIP/100-00000033
+ChannelState: 6
+ChannelStateDesc: Up
+CallerIDNum: 100
+CallerIDName: user100
+ConnectedLineNum: 101
+ConnectedLineName: user101
+Language: en
+AccountCode: 
+Context: internal
+Exten: 
+Priority: 1
+Uniqueid: 1741614725.99
+Linkedid: 1741614725.98
+Cause: 16
+Cause-txt: Normal Clearing
+
+
+<-- Examining AMI event (552698796): -->
+Event: DeviceStateChange
+Privilege: call,all
+Timestamp: 1741614738.459528
+SequenceNumber: 2775
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Device: PJSIP/101
+State: NOT_INUSE
+
+
+<-- Examining AMI event (552698796): -->
+Event: DeviceStateChange
+Privilege: call,all
+Timestamp: 1741614738.459547
+SequenceNumber: 2776
+File: manager.c
+Line: 596
+Func: manager_default_msg_cb
+Device: PJSIP/100
+State: NOT_INUSE
+
+
+ubuntu*CLI> 
+Disconnected from Asterisk server
+Asterisk cleanly ending (0).
+Executing last minute cleanups
+

@@ -48,8 +48,15 @@ class AmiClient:
                 # Register event handlers
                 if self.event_callback:
                     # Register for each event type separately
-                    for event in ['PeerStatus', 'DeviceStateChange', 'Newchannel', 'Hangup', 'Bridge', 'Dial']:
+                    for event in [
+                        'DeviceStateChange', 'Newchannel', 'Hangup', 'Bridge', 'Dial', 'Newstate', 
+                        'BridgeEnter', 'BridgeLeave', 'DialBegin', 'DialEnd', 'Newexten',
+                        'RTCPReceived', 'RTCPSent', 'ContactStatus', 'PeerStatus', 'ChannelTalkingStart',
+                        'ChannelTalkingStop', 'CoreShowChannel', 'ChannelUpdate'
+                    ]:
                         self.manager.register_event(event, self._handle_event)
+                    # Log successful registration
+                    logger.info("Successfully registered all AMI events")
             except Exception as e:
                 raise
 
@@ -58,10 +65,12 @@ class AmiClient:
         if self.event_callback:
             event_type = event.get('Event')
             event_data = dict(event)
+            
+            # Log detailed event information for debugging
+            if event_type in ['Dial', 'Newstate', 'Newchannel', 'Hangup']:
+                logger.info(f"Received AMI event: {event_type} - DATA: {event_data}")
+                
             await self.event_callback(event_type, event_data)
-            # Broadcast the event to Socket.IO clients
-            #logger.info(f"Broadcasting event: {event_type}")
-            #await broadcast_event(event_type, event_data)
 
     async def close(self):
         """Close AMI connection"""
@@ -150,34 +159,6 @@ class AmiClient:
         
         return {'endpoints': [endpoints], 'details': endpoint_details}
 
-    async def get_endpoint_state(self, extension: str) -> Dict:
-        """Get current state of an endpoint"""
-        if not self._connected:
-            await self.connect()
-
-        try:
-            action = {'Action': 'ExtensionState', 'Exten': str(extension)}
-            response = await self.manager.send_action(action)
-
-            # Use next() to extract the first response or return a default
-            endpoint_status = next((
-                {
-                    'status': detail.get('Status', -1),
-                    'statusText': detail.get('StatusText', 'Unknown')
-                } 
-                for detail in response if detail
-            ), {
-                'status': -1, 
-                'statusText': 'Error at getting endpoint state'
-            })
-
-            return endpoint_status
-
-        except Exception as e:
-            return {
-                'status': -1,
-                'statusText': 'Error at getting endpoint state'
-            }
 
     async def get_active_calls(self) -> List[Dict]:
         """Get information about all active calls in the system"""
@@ -193,34 +174,3 @@ class AmiClient:
         except Exception as e:
             raise
 
-    async def _handle_extension_status(self, event: Dict):
-        """Handle ExtensionStatus events and track extension state changes
-        
-        Args:
-            event: Raw AMI event dictionary
-        """
-        try:
-            extension = event.get('Exten', '')
-            status = event.get('Status', -1)
-            status_text = event.get('StatusText', 'Unknown')
-            context = event.get('Context', '')
-            
-            # Prepare event data
-            extension_status = {
-                'extension': extension,
-                'status': status,
-                'statusText': status_text,
-                'context': context
-            }
-            
-            # Broadcast the event if a callback is set
-            if self.event_callback:
-                await self.event_callback('ExtensionStatus', extension_status)
-        
-        except Exception as e:
-            pass
-
-    def register_event_handlers(self):
-        """Register event handlers for various AMI events"""
-        # Register ExtensionStatus event handler
-        self.manager.register_event('ExtensionStatus', self._handle_extension_status)

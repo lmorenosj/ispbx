@@ -16,6 +16,8 @@ async def broadcast_event(event_type: str, event_data: dict):
     
     try:
         logger.info(f"Broadcasting event: {event_type}")
+        
+        # Emit the event to all connected clients
         await sio.emit(event_type, {"data": event_data})
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(f"Error broadcasting event {event_type}: {e}")
