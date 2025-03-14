@@ -9,6 +9,15 @@ import requests
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# Configure AMI event logging
+ami_logger = logging.getLogger('ami_events')
+ami_logger.setLevel(logging.INFO)
+
+# Create file handler for AMI events
+ami_handler = logging.FileHandler('ami_events.log')
+ami_handler.setFormatter(logging.Formatter('%(asctime)s - %(message)s'))
+ami_logger.addHandler(ami_handler)
+
 # Create Flask app
 app = Flask(__name__)
 
@@ -36,23 +45,32 @@ def proxy_endpoints():
 @sio_client.event
 def connect():
     logger.info("Connected to Socket.IO server")
+    socketio_app.emit('backendConnected', {'status': 'connected'})
 
 @sio_client.on('DeviceStateChange')
+def endpointState_handler(data):
+    socketio_app.emit('EndpointState', data)
+    logger.info(f"Emitting EndpointState event to front: {data}")
+    ami_logger.info(f"DeviceStateChange: {data}")
+
 @sio_client.on('Newchannel')
 @sio_client.on('DialState')
 @sio_client.on('DialEnd')
 @sio_client.on('Hangup')
-def deviceStateChange_handler(data):
-    socketio_app.emit('EndpointStateChange', data)
-    logger.info(f"Emitting EndpointStateChange event to front: {data}")
+def endpointCallState_handler(data):
+    socketio_app.emit('EndpointCallState', data)
+    logger.info(f"Emitting EndpointCallState event to front: {data}")
+    ami_logger.info(f"{data.get('Event', 'Unknown')}: {data}")
 
 @sio_client.event
 def connect_error(data):
     logger.error(f"Socket.IO connection error: {data}")
+    socketio_app.emit('backendError', {'error': str(data)})
 
 @sio_client.event
 def disconnect():
     logger.warning("Disconnected from Socket.IO server")
+    socketio_app.emit('backendDisconnected', {'status': 'disconnected'})
 
 # Connect to backend in a background task
 def connect_to_backend():
@@ -62,8 +80,10 @@ def connect_to_backend():
         sio_client.wait()  # Keep the connection alive
     except socketio.exceptions.ConnectionError as e:
         logger.error(f"Failed to connect to Socket.IO backend: {e}")
+        socketio_app.emit('backendError', {'error': str(e)})
     except Exception as e:
         logger.error(f"Unexpected error connecting to backend: {e}")
+        socketio_app.emit('backendError', {'error': str(e)})
 
 if __name__ == '__main__':
     # Start backend connection in a Flask-SocketIO managed thread

@@ -3,8 +3,13 @@
 
 
 # Set the backend directory path
-BACKEND_DIR="/home/ubuntu/Documents/ispbx/backend"
-VENV_DIR="/home/ubuntu/Documents/ispbx/backend/venv"
+#BACKEND_DIR="/home/ubuntu/Documents/ispbx/backend"
+#VENV_DIR="/home/ubuntu/Documents/ispbx/backend/venv"
+
+# Set the backend directory path with 172.16.4.50
+BACKEND_DIR="/home/tier1/ispbx/backend"
+VENV_DIR="/home/tier1/ispbx/backend/venv"
+
 
 
 # Change to backend directory
@@ -26,11 +31,11 @@ truncate -s 0 logs/uvicorn_access.log
 source $VENV_DIR/bin/activate
 
 # Install requirements if requirements.txt exists
-#if [ -f "$BACKEND_DIR/requirements.txt" ]; then
-#    echo "Installing dependencies..."
-#    pip install -r $BACKEND_DIR/requirements.txt
-#fi
-
+"if [ -f "$BACKEND_DIR/requirements.txt" ]; then
+    echo "Installing dependencies..."
+    pip3 install -r $BACKEND_DIR/requirements.txt
+fi
+"
 
 
 # Run the backend application
