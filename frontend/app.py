@@ -37,9 +37,40 @@ sio_client = socketio.Client(logger=True, reconnection=True)
 def index():
     return render_template('index.html')
 
-@app.route('/api/endpoints', methods=['GET'])
+@app.route('/api/endpoints', methods=['GET', 'POST'])
 def proxy_endpoints():
-    resp = requests.get('http://127.0.0.1:8000/api/endpoints')
+    if request.method == 'GET':
+        resp = requests.get('http://127.0.0.1:8000/api/endpoints')
+    elif request.method == 'POST':
+        # Forward the create endpoint request to the backend
+        resp = requests.post(
+            'http://127.0.0.1:8000/api/endpoints',
+            json=request.json,
+            headers={'Content-Type': 'application/json'}
+        )
+    return Response(resp.content, status=resp.status_code, content_type=resp.headers.get('content-type'))
+
+@app.route('/api/endpoints/<extension>', methods=['GET', 'PUT', 'DELETE'])
+def proxy_endpoint_details(extension):
+    if request.method == 'GET':
+        resp = requests.get(f'http://127.0.0.1:8000/api/endpoints/{extension}')
+    elif request.method == 'PUT':
+        # Forward the update endpoint request to the backend
+        resp = requests.put(
+            f'http://127.0.0.1:8000/api/endpoints/{extension}',
+            json=request.json,
+            headers={'Content-Type': 'application/json'}
+        )
+    elif request.method == 'DELETE':
+        # Forward the delete endpoint request to the backend
+        resp = requests.delete(f'http://127.0.0.1:8000/api/endpoints/{extension}')
+    
+    return Response(resp.content, status=resp.status_code, content_type=resp.headers.get('content-type'))
+
+@app.route('/api/endpoints/<extension>/config', methods=['GET'])
+def proxy_endpoint_config(extension):
+    """Proxy endpoint configuration requests to the backend API"""
+    resp = requests.get(f'http://127.0.0.1:8000/api/endpoints/{extension}/config')
     return Response(resp.content, status=resp.status_code, content_type=resp.headers.get('content-type'))
 
 @sio_client.event
@@ -58,8 +89,8 @@ def endpointState_handler(data):
 @sio_client.on('DialEnd')
 @sio_client.on('Hangup')
 def endpointCallState_handler(data):
-    socketio_app.emit('EndpointCallState', data)
     logger.info(f"Emitting EndpointCallState event to front: {data}")
+    socketio_app.emit('EndpointCallState', data)
     ami_logger.info(f"{data.get('Event', 'Unknown')}: {data}")
 
 @sio_client.event

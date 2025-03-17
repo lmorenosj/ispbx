@@ -24,5 +24,8 @@ truncate -s 0 logs/uvicorn_access.log
 source $VENV_DIR/bin/activate
 
 
-echo "Running tests for all extensions"
-PYTHONPATH=$BACKEND_DIR/src python3 tests/endpoint_monitor_test.py
+#echo "Running tests for all extensions"
+#PYTHONPATH=$BACKEND_DIR/src python3 tests/test_update_endpoint.py
+
+echo "Running tests for endpoint deletion"
+PYTHONPATH=$BACKEND_DIR/src python3 tests/test_add_endpoint.py

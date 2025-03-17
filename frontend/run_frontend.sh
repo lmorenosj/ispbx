@@ -3,10 +3,10 @@
 
 
 # Set the backend directory path
-#FRONTEND_DIR="/home/ubuntu/Documents/ispbx/frontend"
-#VENV_DIR="/home/ubuntu/Documents/ispbx/frontend/venv"
-FRONTEND_DIR="/home/tier1/ispbx/frontend"
-VENV_DIR="/home/tier1/ispbx/frontend/venv"
+FRONTEND_DIR="/home/ubuntu/Documents/ispbx/frontend"
+VENV_DIR="/home/ubuntu/Documents/ispbx/frontend/venv"
+#FRONTEND_DIR="/home/tier1/ispbx/frontend"
+#VENV_DIR="/home/tier1/ispbx/frontend/venv"
 
 
 # Change to backend directory
@@ -28,4 +28,4 @@ fi
 # Assuming the main file is app.py, modify this if it's different
 echo "Starting backend server..."
 # Run the test script with verbose output
-python -m pytest app.py -v || python3 app.py
+python3 app.py
