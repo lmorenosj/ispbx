@@ -1,22 +1,20 @@
 #!/bin/bash
 
-
-
 # Set the backend directory path
-#BACKEND_DIR="/home/ubuntu/Documents/ispbx/backend"
-#VENV_DIR="/home/ubuntu/Documents/ispbx/backend/venv"
-
-# Set the backend directory path with 172.16.4.50
-BACKEND_DIR="/home/tier1/ispbx/backend"
-VENV_DIR="/home/tier1/ispbx/backend/venv"
+BACKEND_DIR="/home/ubuntu/Documents/ispbx/backend"
+VENV_DIR="/home/ubuntu/Documents/ispbx/venv"
 
 
 
 # Change to backend directory
 cd $BACKEND_DIR
 
-# Clear api logs
+# Create logs directory if it doesn't exist
+mkdir -p logs
+
+# Clear api logs if they exist
 echo "Clearing logs"
+touch logs/api.log logs/errors.log logs/ami_events.log logs/ami_responses.log logs/ami.log logs/uvicorn.log logs/uvicorn_access.log
 truncate -s 0 logs/api.log
 truncate -s 0 logs/errors.log
 truncate -s 0 logs/ami_events.log
@@ -31,11 +29,13 @@ truncate -s 0 logs/uvicorn_access.log
 source $VENV_DIR/bin/activate
 
 # Install requirements if requirements.txt exists
-"if [ -f "$BACKEND_DIR/requirements.txt" ]; then
+if [ -f "$BACKEND_DIR/requirements.txt" ]; then
     echo "Installing dependencies..."
     pip3 install -r $BACKEND_DIR/requirements.txt
 fi
-"
+
+# Install aiomysql for endpoint management
+pip3 install aiomysql
 
 
 # Run the backend application

@@ -37,9 +37,52 @@ sio_client = socketio.Client(logger=True, reconnection=True)
 def index():
     return render_template('index.html')
 
+# Endpoint API proxy routes
 @app.route('/api/endpoints', methods=['GET'])
-def proxy_endpoints():
+def get_endpoints():
     resp = requests.get('http://127.0.0.1:8000/api/endpoints')
+    logger.info(f"GET /api/endpoints: {resp.status_code}")
+    return Response(resp.content, status=resp.status_code, content_type=resp.headers.get('content-type'))
+
+@app.route('/api/endpoints/<endpoint_id>', methods=['GET'])
+def get_endpoint(endpoint_id):
+    resp = requests.get(f'http://127.0.0.1:8000/api/endpoints/{endpoint_id}')
+    logger.info(f"GET /api/endpoints/{endpoint_id}: {resp.status_code}")
+    return Response(resp.content, status=resp.status_code, content_type=resp.headers.get('content-type'))
+
+@app.route('/api/endpoints/db', methods=['GET'])
+def get_db_endpoints():
+    resp = requests.get('http://127.0.0.1:8000/api/endpoints/db')
+    logger.info(f"GET /api/endpoints/db: {resp.status_code}")
+    return Response(resp.content, status=resp.status_code, content_type=resp.headers.get('content-type'))
+
+@app.route('/api/endpoints/db/<endpoint_id>', methods=['GET'])
+def get_db_endpoint(endpoint_id):
+    resp = requests.get(f'http://127.0.0.1:8000/api/endpoints/db/{endpoint_id}')
+    logger.info(f"GET /api/endpoints/db/{endpoint_id}: {resp.status_code}")
+    return Response(resp.content, status=resp.status_code, content_type=resp.headers.get('content-type'))
+
+@app.route('/api/endpoints', methods=['POST'])
+def create_endpoint():
+    resp = requests.post(
+        'http://127.0.0.1:8000/api/endpoints',
+        json=request.json,
+        headers={'Content-Type': 'application/json'}
+    )
+    return Response(resp.content, status=resp.status_code, content_type=resp.headers.get('content-type'))
+
+@app.route('/api/endpoints/<endpoint_id>', methods=['PUT'])
+def update_endpoint(endpoint_id):
+    resp = requests.put(
+        f'http://127.0.0.1:8000/api/endpoints/{endpoint_id}',
+        json=request.json,
+        headers={'Content-Type': 'application/json'}
+    )
+    return Response(resp.content, status=resp.status_code, content_type=resp.headers.get('content-type'))
+
+@app.route('/api/endpoints/<endpoint_id>', methods=['DELETE'])
+def delete_endpoint(endpoint_id):
+    resp = requests.delete(f'http://127.0.0.1:8000/api/endpoints/{endpoint_id}')
     return Response(resp.content, status=resp.status_code, content_type=resp.headers.get('content-type'))
 
 @sio_client.event

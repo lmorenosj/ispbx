@@ -1,0 +1,87 @@
+<!-- Endpoint Modal -->
+<div class="modal fade" id="endpointModal" tabindex="-1" aria-labelledby="endpointModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="endpointModalLabel">Add New Endpoint</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="endpointForm">
+          <input type="hidden" id="endpointAction" value="create">
+          
+          <div class="mb-3">
+            <label for="endpointId" class="form-label">Extension</label>
+            <input type="text" class="form-control" id="endpointId" required>
+            <div class="form-text">Extension number (e.g., 1000)</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="endpointName" class="form-label">Name</label>
+            <input type="text" class="form-control" id="endpointName" required>
+            <div class="form-text">Display name for this endpoint</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="endpointPassword" class="form-label">Password</label>
+            <input type="password" class="form-control" id="endpointPassword" required>
+            <div class="form-text">Authentication password</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="endpointContext" class="form-label">Context</label>
+            <input type="text" class="form-control" id="endpointContext" value="from-internal">
+            <div class="form-text">Dialplan context</div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Codecs</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="g722" id="codecG722" checked>
+              <label class="form-check-label" for="codecG722">
+                G.722
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="ulaw" id="codecUlaw">
+              <label class="form-check-label" for="codecUlaw">
+                ulaw
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="alaw" id="codecAlaw">
+              <label class="form-check-label" for="codecAlaw">
+                alaw
+              </label>
+            </div>
+          </div>
+        </form>
+        <div class="alert alert-danger d-none" id="endpointFormError"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="saveEndpointBtn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteEndpointModal" tabindex="-1" aria-labelledby="deleteEndpointModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteEndpointModalLabel">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete endpoint <span id="deleteEndpointId"></span>?</p>
+        <p class="text-danger">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -63,12 +63,20 @@ class AmiClient:
             event_type = event.get('Event')
             event_data = dict(event)
             
-            # Log detailed event information for debugging
-            if event_type in ['Dial', 'Newstate', 'Newchannel', 'Hangup']:
-                logger.info(f"Received AMI event: {event_type} - DATA: {event_data}")
+            # Enhanced logging for all AMI events
+            logger.info(f"Received AMI event: {event_type}")
+            logger.debug(f"AMI event details: {event_data}")
+            
+            # Log detailed event information for important events
+            if event_type in ['DeviceStateChange', 'Dial', 'Newstate', 'Newchannel', 'Hangup', 'DialState', 'DialEnd']:
+                logger.info(f"Important AMI event: {event_type} - DATA: {event_data}")
                 
-            await self.event_callback(event_type, event_data)
-
+            try:
+                await self.event_callback(event_type, event_data)
+                logger.debug(f"Successfully processed event {event_type}")
+            except Exception as e:
+                logger.error(f"Error in event callback for {event_type}: {str(e)}")
+                
     async def close(self):
         """Close AMI connection"""
         if self._connected and self.manager:
@@ -170,4 +178,3 @@ class AmiClient:
             return parse_active_calls(channels_response, bridges_response)
         except Exception as e:
             raise
-
