@@ -28,4 +28,4 @@ fi
 # Assuming the main file is app.py, modify this if it's different
 echo "Starting backend server..."
 # Run the test script with verbose output
-python3 app.py
+python -m pytest app.py -v || python3 app.py

@@ -51,8 +51,8 @@ Action: Login
 Username: $AMI_USER
 Secret: $AMI_PASS
 
-Action: PJSIPShowEndpoint
-Endpoint: 100
+Action: ExtensionState
+Exten: 100
 
 Action: Logoff
 
