@@ -94,7 +94,7 @@ class CallMonitor {
         });
     }
 
-    // Handle call events
+    // Process endpoint call events
     handleEvent(eventData) {
         // Extract event data from wrapper if needed
         const data = eventData.data || eventData;
@@ -103,7 +103,7 @@ class CallMonitor {
         switch (event) {
             case 'Newchannel':
                 // Only create call entry for the originating channel
-                if (data.CallerIDNum !== '<unknown>' && data.Exten) {
+                if (data.CallerIDNum !== '<unknown>' && data.Exten && data.ChannelState !=='0') {
                     const callId = data.Linkedid;
                     
                     // Store call information
@@ -120,7 +120,7 @@ class CallMonitor {
                 }
                 break;
                 
-            case 'DialState':
+/*             case 'DialState':
                 const dialCallId = data.Linkedid;
                 if (this.activeCalls[dialCallId]) {
                     const call = this.activeCalls[dialCallId];
@@ -132,14 +132,15 @@ class CallMonitor {
                     call.channels.add(data.Uniqueid);
                     call.channels.add(data.DestUniqueid);
                     
-                    // Update destination info
-                    if (data.DestCallerIDNum && data.DestCallerIDNum !== '<unknown>') {
+                    // Only update destination info if not set from Newchannel event
+                    // This ensures we maintain the correct destination endpoint
+                    if ((!call.to || call.to === '-') && data.DestCallerIDNum && data.DestCallerIDNum !== '<unknown>') {
                         call.to = data.DestCallerIDNum;
                     }
                     
                     this.renderCallsTable();
                 }
-                break;
+                break; */
                 
             case 'DialEnd':
                 const endCallId = data.Linkedid;

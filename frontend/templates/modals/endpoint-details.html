@@ -1,0 +1,27 @@
+<!-- Endpoint Details Modal Template -->
+<div class="modal fade" id="endpoint-details-modal" tabindex="-1" aria-labelledby="endpointDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="endpointDetailsModalLabel">Extension Details: <span id="modal-extension-number"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="endpoint-details-loading" class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading endpoint details...</p>
+                </div>
+                <div id="endpoint-details-content" class="d-none">
+                    <h6>Endpoint Details</h6>
+                    <div id="endpoint-details-json" class="bg-light p-3 rounded"></div>
+                </div>
+                <div id="endpoint-details-error" class="alert alert-danger d-none"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

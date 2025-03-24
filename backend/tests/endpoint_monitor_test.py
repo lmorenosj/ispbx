@@ -61,6 +61,9 @@ class EndpointMonitor:
                 logger.warning(f"Extension {extension} not found in configuration")
                 return
 
+            # Get endpoint configuration
+            config = await self.ami.get_endpoint_config(extension)
+            
             # Update state
             state = await self.ami.get_endpoint_state(extension)
             registration = await self.ami.get_endpoint_registration(extension)
@@ -69,6 +72,7 @@ class EndpointMonitor:
                 'last_updated': datetime.now().isoformat(),
                 'exists_in_config': True,
                 'details': details.get('details', {}),
+                'config': config,  # Add the full configuration
                 'state': str(state) if state is not None else 'unknown',
                 'registration': str(registration) if registration is not None else 'unknown'
             }

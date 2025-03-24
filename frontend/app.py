@@ -101,8 +101,8 @@ def endpointState_handler(data):
 @sio_client.on('DialEnd')
 @sio_client.on('Hangup')
 def endpointCallState_handler(data):
-    socketio_app.emit('EndpointCallState', data)
     logger.info(f"Emitting EndpointCallState event to front: {data}")
+    socketio_app.emit('EndpointCallState', data)
     ami_logger.info(f"{data.get('Event', 'Unknown')}: {data}")
 
 @sio_client.event
