@@ -10,77 +10,129 @@ function formatDuration(seconds) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
+// API endpoints configuration
+const API_CONFIG = {
+    // Backend server URL
+    BACKEND_URL: 'http://localhost:8000',
+    
+    // API endpoints
+    ENDPOINTS: {
+        LIST: '/api/endpoints',
+        DB_LIST: '/api/endpoints/db',
+        GET: (id) => `/api/endpoints/${id}`,
+        DB_GET: (id) => `/api/endpoints/db/${id}`,
+        CREATE: '/api/endpoints',
+        UPDATE: (id) => `/api/endpoints/${id}`,
+        DELETE: (id) => `/api/endpoints/${id}`
+    }
+};
+
 // Socket.IO connection management
 function initializeSocketConnection(endpointMonitor, callMonitor) {
-
     const monitor = endpointMonitor;
-    const socket = io();
     const connectionStatus = document.getElementById('connection-status');
 
-    // Frontend socket connection events
+    // Connect directly to the backend Socket.IO server
+    console.log(`Connecting directly to backend Socket.IO server at ${API_CONFIG.BACKEND_URL}`);
+    const socket = io(API_CONFIG.BACKEND_URL, {
+        reconnectionAttempts: 10,
+        reconnectionDelay: 2000,
+        timeout: 10000,
+        withCredentials: false,
+        transports: ['websocket', 'polling']
+    });
+
+    // Socket connection events
     socket.on('connect', () => {
+        console.log('[Socket.IO] Connected directly to backend server');
         connectionStatus.textContent = 'Connected';
         connectionStatus.classList.remove('connection-disconnected');
         connectionStatus.classList.add('connection-connected');
     });
 
     socket.on('disconnect', () => {
-        console.log('[Frontend] Socket disconnected from frontend server');
-        connectionStatus.textContent = 'Frontend Disconnected';
+        console.log('[Socket.IO] Disconnected from backend server');
+        connectionStatus.textContent = 'Disconnected';
         connectionStatus.classList.remove('connection-connected');
         connectionStatus.classList.add('connection-disconnected');
     });
 
     socket.on('connect_error', (error) => {
-        console.error('[Frontend] Socket connection error:', error);
+        console.error('[Socket.IO] Connection error:', error);
         connectionStatus.textContent = 'Connection Error';
         connectionStatus.classList.remove('connection-connected');
         connectionStatus.classList.add('connection-disconnected');
     });
 
-    // Backend connection status events
-    socket.on('backendConnected', (data) => {
-        console.log('[Backend] Connected to AMI server');
-        connectionStatus.textContent = 'Backend Connected';
-    });
-
-    socket.on('backendDisconnected', (data) => {
-        console.warn('[Backend] Disconnected from AMI server');
-        connectionStatus.textContent = 'Backend Disconnected';
-    });
-
-    socket.on('backendError', (data) => {
-        console.error('[Backend] Connection error:', data.error);
-        connectionStatus.textContent = 'Backend Error';
-    });
-
-    // Listen for EndpointState events
-    socket.on('EndpointState', (event) => {
-        const eventData = event.Event ? event : (event.data || event);
+    // Listen for DeviceStateChange events and transform to EndpointState
+    // This maintains consistent endpoint terminology
+    socket.on('DeviceStateChange', (event) => {
+        console.log('[Event] DeviceStateChange received:', event);
         
-        if (!eventData?.Device || !eventData?.State) {
+        // Extract the actual data from the nested structure
+        const data = event.data || event;
+        
+        if (!data.Device && !data.State) {
+            console.warn('Invalid DeviceStateChange event data:', event);
             return;
         }
-    
+        
+        // Transform to preferred endpoint terminology
+        const endpointData = {
+            EndpointId: data.Device || data.Endpoint || data.endpoint_id,
+            State: data.State || data.status,
+            StateText: data.StateText || '',
+            // Include any additional fields from the original data
+            ...data
+        };
+        
         if (monitor?.handleEvent) {
-            console.log(`[Event] Endpoint ${eventData.Device} state: ${eventData.State}`);
-            monitor.handleEvent(eventData);
+            monitor.handleEvent(endpointData);
         }
     });
-
-    // Listen for EndpointCallState events
-    socket.on('EndpointCallState', (event) => {
-        const eventData = event.Event ? event : (event.data || event);
-        
-        if (!eventData?.Event) {
-            return;
-        }
     
-        if (callMonitor?.handleEvent) {
-            console.log(`[Event] Call ${eventData.Event}`);
-            callMonitor.handleEvent(eventData);
+    // Also listen for individual call events for backward compatibility
+    function processEvent(event) {
+        // Extract the actual data from the nested structure
+        const data = event.data || event;
+        
+        if (!data.Event) {
+            // If the event doesn't have an Event property, set it to the event name
+            data.Event = event.name || 'Unknown';
         }
-    });
+        
+        if (callMonitor?.handleEvent) {
+            console.log(`[Event] Individual call event (${data.Event}`);
+            callMonitor.handleEvent(data);
+        }
+    }
+
+    // Listen for call-related events
+    socket.on('Newchannel', processEvent);
+    socket.on('DialState', processEvent);
+    socket.on('DialEnd', processEvent);
+    socket.on('Hangup', processEvent);
 
     return socket;
+}
+
+// API helper functions
+async function fetchAPI(endpoint, options = {}) {
+    const url = `${API_CONFIG.BACKEND_URL}${endpoint}`;
+    
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+        
+        const data = await response.json();
+        return { status: response.status, data };
+    } catch (error) {
+        console.error(`API Error (${url}):`, error);
+        throw error;
+    }
 }

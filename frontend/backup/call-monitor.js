@@ -7,8 +7,6 @@ class CallMonitor {
 
         // Bind event handler methods
         this.handleEvent = this.handleEvent.bind(this);
-        
-        console.info('CallMonitor initialized');
     }
 
     // Format call status with icon and color
@@ -60,8 +58,6 @@ class CallMonitor {
         
         // Initial update
         updateDuration();
-        
-        console.debug(`Started duration timer for call ${callId}`);
     }
 
     // Render active calls table
@@ -96,22 +92,18 @@ class CallMonitor {
             
             this.callsTable.appendChild(row);
         });
-        
-        console.debug(`Rendered calls table with ${activeCallsList.length} active calls`);
     }
-    
+
     // Handle call events
     handleEvent(eventData) {
         // Extract event data from wrapper if needed
         const data = eventData.data || eventData;
         const event = data.Event;
         
-        console.debug(`Processing call event: ${event}`, data);
-        
         switch (event) {
             case 'Newchannel':
                 // Only create call entry for the originating channel
-                if (data.CallerIDNum !== '<unknown>' && data.Exten !== 's') {
+                if (data.CallerIDNum !== '<unknown>' && data.Exten) {
                     const callId = data.Linkedid;
                     
                     // Store call information
@@ -124,7 +116,6 @@ class CallMonitor {
                         channels: new Set([data.Uniqueid])
                     };
                     
-                    console.info(`New call created: ${data.CallerIDNum} → ${data.Exten} (ID: ${callId})`);
                     this.renderCallsTable();
                 }
                 break;
@@ -138,18 +129,15 @@ class CallMonitor {
                     call.status = data.DialStatus;
                     
                     // Add both channels
-                    if (data.Uniqueid) call.channels.add(data.Uniqueid);
-                    if (data.DestUniqueid) call.channels.add(data.DestUniqueid);
+                    call.channels.add(data.Uniqueid);
+                    call.channels.add(data.DestUniqueid);
                     
                     // Update destination info
                     if (data.DestCallerIDNum && data.DestCallerIDNum !== '<unknown>') {
                         call.to = data.DestCallerIDNum;
                     }
                     
-                    console.debug(`Call ${dialCallId} updated: status=${data.DialStatus}, to=${call.to}`);
                     this.renderCallsTable();
-                } else {
-                    console.warn(`Received DialState for unknown call ID: ${dialCallId}`);
                 }
                 break;
                 
@@ -159,8 +147,6 @@ class CallMonitor {
                     const call = this.activeCalls[endCallId];
                     call.status = 'CONNECTED';
                     call.answerTime = new Date();
-                    
-                    console.info(`Call ${endCallId} connected: ${call.from} → ${call.to}`);
                     
                     // Start duration timer
                     this.startDurationTimer(endCallId);
@@ -175,7 +161,7 @@ class CallMonitor {
                     const call = this.activeCalls[hangupCallId];
                     
                     // Remove the hung up channel
-                    if (data.Uniqueid) call.channels.delete(data.Uniqueid);
+                    call.channels.delete(data.Uniqueid);
                     
                     // If all channels are gone, end the call
                     if (call.channels.size === 0) {
@@ -185,20 +171,13 @@ class CallMonitor {
                             delete this.durationTimers[hangupCallId];
                         }
                         
-                        console.info(`Call ${hangupCallId} ended: ${call.from} → ${call.to}`);
-                        
                         // Remove call from active calls
                         delete this.activeCalls[hangupCallId];
-                    } else {
-                        console.debug(`Channel ${data.Uniqueid} hung up, but call ${hangupCallId} still has ${call.channels.size} active channels`);
                     }
                     
                     this.renderCallsTable();
                 }
                 break;
-                
-            default:
-                console.debug(`Ignoring unhandled event type: ${event}`);
         }
     }
 

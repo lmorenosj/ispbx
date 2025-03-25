@@ -32,14 +32,15 @@ class EndpointManager {
     
     // Initialize the endpoint manager
     initialize() {
-        console.info('Initializing EndpointManager');
+        console.log('Initializing EndpointManager');
         
         // Add event listeners for the add, edit, and delete buttons
         document.addEventListener('click', (event) => {
-            console.debug('Click event detected:', event.target);
+            console.log('Click event detected:', event.target);
             
             // Add endpoint button
             if (event.target.matches('#addEndpointBtn') || event.target.closest('#addEndpointBtn')) {
+                console.log('Add endpoint button clicked');
                 this.showAddEndpointModal();
                 return;
             }
@@ -50,6 +51,7 @@ class EndpointManager {
                 
             if (editButton) {
                 const extension = editButton.getAttribute('data-extension');
+                console.log('Edit button clicked for extension:', extension);
                 this.showEditEndpointModal(extension);
                 return;
             }
@@ -60,6 +62,7 @@ class EndpointManager {
                 
             if (deleteButton) {
                 const extension = deleteButton.getAttribute('data-extension');
+                console.log('Delete button clicked for extension:', extension);
                 this.showDeleteEndpointModal(extension);
                 return;
             }
@@ -93,7 +96,9 @@ class EndpointManager {
     
     // Show modal for editing an existing endpoint
     async showEditEndpointModal(extension) {
-        try {            
+        try {
+            console.log(`Showing edit modal for extension ${extension}`);
+            
             // Reset form and show loading state
             this.endpointForm.reset();
             this.formError.classList.add('d-none');
@@ -116,38 +121,35 @@ class EndpointManager {
             // Show the modal immediately to provide feedback to the user
             this.endpointModal.show();
             
-            // Fetch endpoint details directly from backend
-            try {
-                const { status, data } = await fetchAPI(API_CONFIG.ENDPOINTS.DB_GET(extension));
-                console.debug('[FetchAPI] Endpoint data received:', data);
+            // Fetch endpoint details
+            console.log(`Fetching details for extension ${extension}`);
+            const response = await fetch(`/api/endpoints/db/${extension}`);
+            const data = await response.json();
+            console.log('Endpoint data received:', data);
+            
+            if (data.status === 'success' && data.endpoint) {
+                const endpoint = data.endpoint;
                 
-                if (data.status === 'success' && data.endpoint) {
-                    const endpoint = data.endpoint;
-                    
-                    // Extract name from callerid (format: "Name" <extension>)
-                    const callerid = endpoint.endpoint.callerid || '';
-                    const nameMatch = callerid.match(/"([^"]+)"/); 
-                    this.endpointName.value = nameMatch ? nameMatch[1] : '';
-                    
-                    // Set context
-                    this.endpointContext.value = endpoint.endpoint.context || 'from-internal';
-                    
-                    // Set codecs
-                    const allowedCodecs = (endpoint.endpoint.allow || '').split(',');
-                    this.codecG722.checked = allowedCodecs.includes('g722');
-                    this.codecUlaw.checked = allowedCodecs.includes('ulaw');
-                    this.codecAlaw.checked = allowedCodecs.includes('alaw');
-                } else {
-                    console.error('Failed to fetch endpoint details:', data);
-                    this.formError.textContent = 'Failed to load endpoint details. Please try again.';
-                    this.formError.classList.remove('d-none');
-                }
-            } catch (apiError) {
-                console.error('[FetchAPI] API error fetching endpoint details:', apiError);
-                this.formError.textContent = 'Error loading endpoint details: ' + apiError.message;
+                // Extract name from callerid (format: "Name" <extension>)
+                const callerid = endpoint.endpoint.callerid || '';
+                const nameMatch = callerid.match(/"([^"]+)"/); 
+                this.endpointName.value = nameMatch ? nameMatch[1] : '';
+                
+                // Set context
+                this.endpointContext.value = endpoint.endpoint.context || 'from-internal';
+                
+                // Set codecs
+                const allowedCodecs = (endpoint.endpoint.allow || '').split(',');
+                this.codecG722.checked = allowedCodecs.includes('g722');
+                this.codecUlaw.checked = allowedCodecs.includes('ulaw');
+                this.codecAlaw.checked = allowedCodecs.includes('alaw');
+            } else {
+                console.error('Failed to fetch endpoint details:', data);
+                this.formError.textContent = 'Failed to load endpoint details. Please try again.';
                 this.formError.classList.remove('d-none');
             }
         } catch (error) {
+            console.error('Error fetching endpoint details:', error);
             this.formError.textContent = 'Error loading endpoint details: ' + error.message;
             this.formError.classList.remove('d-none');
         }
@@ -162,14 +164,14 @@ class EndpointManager {
     
     // Save endpoint (create or update)
     async saveEndpoint() {
-        console.info('saveEndpoint method called');
+        console.log('saveEndpoint method called');
         try {
             // Validate form
             if (!this.validateForm()) {
-                console.warn('Form validation failed');
+                console.log('Form validation failed');
                 return;
             }
-            console.debug('Form validation passed');
+            console.log('Form validation passed');
             
             // Get form values
             const endpointId = this.endpointId.value.trim();
@@ -199,6 +201,18 @@ class EndpointManager {
             payload.qualify_frequency = 60; // Default to 60 seconds
             payload.qualify_timeout = 5;   // Default to 5 seconds
             
+            // Determine request method and URL
+            let url = '/api/endpoints';
+            let method = 'POST';
+            
+            if (this.endpointAction.value === 'update') {
+                url = `/api/endpoints/${endpointId}`;
+                method = 'PUT';
+            } else if (this.endpointAction.value === 'create') {
+                // For creation, we need to include endpoint_id in the payload
+                payload.endpoint_id = endpointId;
+            }
+            
             // Show loading state on refresh button
             if (this.refreshIndicator) {
                 console.log('Setting refresh indicator to visible');
@@ -207,75 +221,53 @@ class EndpointManager {
                 console.error('Refresh indicator not found');
             }
             
-            let endpoint, method, apiEndpoint;
+            // Send request
+            console.log(`Sending ${method} request to ${url} with payload:`, payload);
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
             
-            // Determine request method and endpoint based on action
-            if (this.endpointAction.value === 'update') {
-                method = 'PUT';
-                apiEndpoint = API_CONFIG.ENDPOINTS.UPDATE(endpointId);
-            } else if (this.endpointAction.value === 'create') {
-                method = 'POST';
-                apiEndpoint = API_CONFIG.ENDPOINTS.CREATE;
-                // For creation, we need to include endpoint_id in the payload
-                payload.endpoint_id = endpointId;
-            }
+            console.log(`Response status: ${response.status}`);
+            const data = await response.json();
+            console.log('Response data:', data);
             
-            // Send request directly to backend
-            console.log(`Sending ${method} request to ${apiEndpoint} with payload:`, payload);
-            try {
-                const { status, data } = await fetchAPI(apiEndpoint, {
-                    method,
-                    body: JSON.stringify(payload)
-                });
+            if (data.status === 'success') {
+                console.log('Operation successful, closing modal');
+                // Close modal
+                this.endpointModal.hide();
                 
-                console.log(`Response status: ${status}`);
-                console.log('Response data:', data);
-                
-                if (data.status === 'success') {
-                    console.log('Operation successful, closing modal');
-                    // Close modal
-                    this.endpointModal.hide();
-                    
-                    // Refresh endpoints by simulating a click on the refresh button
-                    console.log(`Refreshing dashboard after ${this.endpointAction.value} operation for endpoint ${endpointId}`);
-                    // Add a small delay to ensure AMI has time to process the changes
-                    setTimeout(() => {
-                        console.log('Timeout completed, triggering refresh button click');
-                        if (this.refreshBtn) {
-                            console.log('Clicking refresh button');
-                            this.refreshBtn.click();
-                        } else {
-                            console.error('Refresh button not found');
-                        }
-                    }, 500);
-                    
-                    // Show success message
-                    alert(`Endpoint ${endpointId} ${this.endpointAction.value === 'create' ? 'created' : 'updated'} successfully.`);
-                } else {
-                    // Hide loading state on refresh button
-                    if (this.refreshIndicator) {
-                        console.log('Setting refresh indicator to hidden');
-                        this.refreshIndicator.style.display = 'none';
+                // Refresh endpoints by simulating a click on the refresh button
+                console.log(`Refreshing dashboard after ${this.endpointAction.value} operation for endpoint ${endpointId}`);
+                // Add a small delay to ensure AMI has time to process the changes
+                setTimeout(() => {
+                    console.log('Timeout completed, triggering refresh button click');
+                    if (this.refreshBtn) {
+                        console.log('Clicking refresh button');
+                        this.refreshBtn.click();
+                    } else {
+                        console.error('Refresh button not found');
                     }
-                    
-                    // Show error message
-                    this.formError.textContent = data.message || 'Failed to save endpoint. Please try again.';
-                    this.formError.classList.remove('d-none');
-                }
-            } catch (apiError) {
-                console.error('API error saving endpoint:', apiError);
+                }, 500);
                 
+                // Show success message
+                alert(`Endpoint ${endpointId} ${this.endpointAction.value === 'create' ? 'created' : 'updated'} successfully.`);
+            } else {
                 // Hide loading state on refresh button
                 if (this.refreshIndicator) {
                     console.log('Setting refresh indicator to hidden');
                     this.refreshIndicator.style.display = 'none';
                 }
                 
-                this.formError.textContent = 'Error saving endpoint: ' + apiError.message;
+                // Show error message
+                this.formError.textContent = data.message || 'Failed to save endpoint. Please try again.';
                 this.formError.classList.remove('d-none');
             }
         } catch (error) {
-            console.error('Error in saveEndpoint:', error);
+            console.error('Error saving endpoint:', error);
             
             // Hide loading state on refresh button
             if (this.refreshIndicator) {
@@ -303,58 +295,44 @@ class EndpointManager {
                 console.error('Refresh indicator not found');
             }
             
-            // Send delete request directly to backend
-            console.log(`Deleting endpoint ${extension}`);
-            try {
-                const { status, data } = await fetchAPI(API_CONFIG.ENDPOINTS.DELETE(extension), {
-                    method: 'DELETE'
-                });
+            // Send delete request
+            const response = await fetch(`/api/endpoints/${extension}`, {
+                method: 'DELETE'
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                // Close modal
+                this.deleteModal.hide();
                 
-                console.log(`Delete response status: ${status}`);
-                console.log('Delete response data:', data);
-                
-                if (data.status === 'success') {
-                    // Close modal
-                    this.deleteModal.hide();
-                    
-                    // Refresh endpoints by simulating a click on the refresh button
-                    console.log(`Refreshing dashboard after delete operation for endpoint ${extension}`);
-                    // Add a small delay to ensure AMI has time to process the changes
-                    setTimeout(() => {
-                        console.log('Timeout completed, triggering refresh button click after delete');
-                        if (this.refreshBtn) {
-                            console.log('Clicking refresh button');
-                            this.refreshBtn.click();
-                        } else {
-                            console.error('Refresh button not found');
-                        }
-                    }, 500);
-                    
-                    // Show success message
-                    alert(`Endpoint ${extension} deleted successfully.`);
-                } else {
-                    // Hide loading state on refresh button
-                    if (this.refreshIndicator) {
-                        console.log('Setting refresh indicator to hidden');
-                        this.refreshIndicator.style.display = 'none';
+                // Refresh endpoints by simulating a click on the refresh button
+                console.log(`Refreshing dashboard after delete operation for endpoint ${extension}`);
+                // Add a small delay to ensure AMI has time to process the changes
+                setTimeout(() => {
+                    console.log('Timeout completed, triggering refresh button click after delete');
+                    if (this.refreshBtn) {
+                        console.log('Clicking refresh button');
+                        this.refreshBtn.click();
+                    } else {
+                        console.error('Refresh button not found');
                     }
-                    
-                    // Show error message
-                    alert(data.message || 'Failed to delete endpoint. Please try again.');
-                }
-            } catch (apiError) {
-                console.error('API error deleting endpoint:', apiError);
+                }, 500);
                 
+                // Show success message
+                alert(`Endpoint ${extension} deleted successfully.`);
+            } else {
                 // Hide loading state on refresh button
                 if (this.refreshIndicator) {
                     console.log('Setting refresh indicator to hidden');
                     this.refreshIndicator.style.display = 'none';
                 }
                 
-                alert('Error deleting endpoint: ' + apiError.message);
+                // Show error message
+                alert(data.message || 'Failed to delete endpoint. Please try again.');
             }
         } catch (error) {
-            console.error('Error in deleteEndpoint:', error);
+            console.error('Error deleting endpoint:', error);
             
             // Hide loading state on refresh button
             if (this.refreshIndicator) {

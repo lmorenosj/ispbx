@@ -13,12 +13,10 @@ class EndpointMonitor {
         
         // Bind event handler methods
         this.handleEvent = this.handleEvent.bind(this);
-        
-        console.info('EndpointMonitor initialized with consistent endpoint terminology');
     }
 
-    // Format the endpoint state display
-    formatEndpointState(state) {
+    // Format the device state display
+    formatDeviceState(state) {
         if (!state) return 'Unknown';
         
         // Normalize state string
@@ -66,7 +64,7 @@ class EndpointMonitor {
             row.innerHTML = `
                 <td>${endpoint.Extension}</td>
                 <td>${endpoint.Name}</td>
-                <td>${this.formatEndpointState(endpoint.State)}</td>
+                <td>${this.formatDeviceState(endpoint.State)}</td>
                 <td>${endpoint.lastUpdated || formatTimestamp()}</td>
                 <td class="text-end">
                     <button class="btn btn-sm btn-outline-primary edit-endpoint-btn" data-extension="${endpoint.Extension}">
@@ -80,57 +78,49 @@ class EndpointMonitor {
             
             this.endpointsTable.appendChild(row);
         });
-        
-        console.debug(`Rendered endpoints table with ${this.endpoints.length} endpoints`);
     }
 
-    // Fetch endpoints data directly from backend API
+    // Fetch endpoints data from API
     async fetchEndpoints(isAutoRefresh = false) {
         try {
-            console.info(`Fetching endpoints data from backend... (Auto refresh: ${isAutoRefresh})`);
-            console.debug('refreshIndicator element:', this.refreshIndicator);
+            console.log(`Fetching endpoints data... (Auto refresh: ${isAutoRefresh})`);
+            console.log('refreshIndicator element:', this.refreshIndicator);
             this.refreshIndicator.style.display = 'inline-block';
-            console.debug('refreshIndicator display set to inline-block');
+            console.log('refreshIndicator display set to inline-block');
             
-            console.info(`Sending fetch request to ${API_CONFIG.BACKEND_URL}${API_CONFIG.ENDPOINTS.LIST}`);
-            try {
-                const { status, data } = await fetchAPI(API_CONFIG.ENDPOINTS.LIST);
-                console.debug('Response status:', status);
-                console.debug('Parsed response data:', data);
+            console.log('Sending fetch request to /api/endpoints');
+            const response = await fetch('/api/endpoints');
+            console.log('Response received:', response.status);
+            const data = await response.json();
+            console.log('Parsed response data:', data);
+            
+            if (data.status === 'success' && Array.isArray(data.endpoints)) {
+                console.log(`Received ${data.endpoints.length} endpoints`);
+                // Add timestamp to each endpoint
+                this.endpoints = data.endpoints.map(endpoint => ({
+                    ...endpoint,
+                    lastUpdated: formatTimestamp()
+                }));
+                console.log('Rendering endpoints table');
+                this.renderEndpointsTable();
+                console.log('Endpoints table rendered');
                 
-                if (data.status === 'success' && Array.isArray(data.endpoints)) {
-                    console.info(`Received ${data.endpoints.length} endpoints`);
-                    // Add timestamp to each endpoint
-                    this.endpoints = data.endpoints.map(endpoint => ({
-                        ...endpoint,
-                        lastUpdated: formatTimestamp()
-                    }));
-                    console.debug('Rendering endpoints table');
-                    this.renderEndpointsTable();
-                    console.debug('Endpoints table rendered');
-                    
-                    if (isAutoRefresh) {
-                        console.info('Dashboard automatically refreshed after endpoint operation');
-                    }
-                } else {
-                    console.error('Failed to fetch endpoints:', data);
-                    this.noDataAlert.textContent = 'Failed to load endpoint data. Please try again.';
-                    this.noDataAlert.classList.remove('d-none');
-                    this.loadingIndicator.classList.add('d-none');
+                if (isAutoRefresh) {
+                    console.log('Dashboard automatically refreshed after endpoint operation');
                 }
-            } catch (apiError) {
-                console.error('API error fetching endpoints:', apiError);
-                this.noDataAlert.textContent = 'Error loading endpoint data: ' + apiError.message;
+            } else {
+                console.error('Failed to fetch endpoints:', data);
+                this.noDataAlert.textContent = 'Failed to load endpoint data. Please try again.';
                 this.noDataAlert.classList.remove('d-none');
                 this.loadingIndicator.classList.add('d-none');
             }
         } catch (error) {
-            console.error('Error in fetchEndpoints:', error);
+            console.error('Error fetching endpoints:', error);
             this.noDataAlert.textContent = 'Error loading endpoint data: ' + error.message;
             this.noDataAlert.classList.remove('d-none');
             this.loadingIndicator.classList.add('d-none');
         } finally {
-            console.debug('Setting refreshIndicator display to none');
+            console.log('Setting refreshIndicator display to none');
             this.refreshIndicator.style.display = 'none';
         }
     }
@@ -152,21 +142,15 @@ class EndpointMonitor {
         const row = document.querySelector(`tr[data-extension="${extension}"]`);
         if (row) {
             const stateCell = row.cells[2];
-            stateCell.innerHTML = this.formatEndpointState(newState);
+            stateCell.innerHTML = this.formatDeviceState(newState);
         }
-        
-        console.debug(`Updated endpoint ${extension} state to ${newState}`);
     }
 
-    // Process events with consistent endpoint terminology
+    // Handle AMI events
     handleEvent(data) {
-        // Check if this is a device state event
-        if (data.Device && data.State) {
-            console.debug(`Processing endpoint state event for ${data.Device}: ${data.State}`);
-            this.updateEndpointState(data.Device, data.State);
-        } else {
-            console.warn('Received event with unexpected format:', data);
-        }
+        const eventType = data.Event;
+        this.updateEndpointState(data.Device, data.State);
+
     }
 
     // Initialize the monitor

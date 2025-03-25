@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 sio = socketio.AsyncServer(
     async_mode='asgi', 
-    cors_allowed_origins=['*']
+    cors_allowed_origins=['http://localhost:5000', 'http://127.0.0.1:5000', '*']
 )
 
 async def broadcast_event(event_type: str, event_data: dict):
