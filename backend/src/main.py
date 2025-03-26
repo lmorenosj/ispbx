@@ -2,7 +2,7 @@
 import os
 import socketio
 import uvicorn
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -13,6 +13,8 @@ from contextlib import asynccontextmanager
 from client import AmiClient
 from events import sio, broadcast_event  # Import from events.py
 from endpoint_manager import EndpointManager
+from cdr_manager import CDRManager
+from queue_manager import QueueManager
 from pydantic import BaseModel
 
 # Configure logging
@@ -37,6 +39,41 @@ class EndpointUpdate(BaseModel):
     codecs: Optional[List[str]] = None
     max_contacts: Optional[int] = None
 
+# Pydantic models for queue operations
+class QueueCreate(BaseModel):
+    queue_name: str  # Required
+    strategy: str = "ringall"
+    timeout: int = 15
+    musiconhold: str = "default"
+    announce: Optional[str] = None
+    context: str = "from-queue"
+    maxlen: int = 0
+    servicelevel: int = 60
+    wrapuptime: int = 0
+
+class QueueUpdate(BaseModel):
+    strategy: Optional[str] = None
+    timeout: Optional[int] = None
+    musiconhold: Optional[str] = None
+    announce: Optional[str] = None
+    context: Optional[str] = None
+    maxlen: Optional[int] = None
+    servicelevel: Optional[int] = None
+    wrapuptime: Optional[int] = None
+
+class QueueMemberAdd(BaseModel):
+    interface: str  # Required (e.g., 'PJSIP/1000')
+    membername: Optional[str] = None
+    penalty: int = 0
+    paused: int = 0
+    wrapuptime: Optional[int] = None
+
+class QueueMemberUpdate(BaseModel):
+    membername: Optional[str] = None
+    penalty: Optional[int] = None
+    paused: Optional[int] = None
+    wrapuptime: Optional[int] = None
+
 # Initialize AMI client with the broadcast_event
 ami_client = AmiClient(
     event_callback=broadcast_event,
@@ -48,6 +85,24 @@ ami_client = AmiClient(
 
 # Initialize endpoint manager
 endpoint_manager = EndpointManager(
+    host=os.getenv('MYSQL_HOST', 'localhost'),
+    port=int(os.getenv('MYSQL_PORT', '3306')),
+    user=os.getenv('MYSQL_USER', 'asteriskuser'),
+    password=os.getenv('MYSQL_PASSWORD', 'asteriskpassword'),
+    db=os.getenv('MYSQL_DATABASE', 'asterisk')
+)
+
+# Initialize CDR manager
+cdr_manager = CDRManager(
+    host=os.getenv('MYSQL_HOST', 'localhost'),
+    port=int(os.getenv('MYSQL_PORT', '3306')),
+    user=os.getenv('MYSQL_USER', 'asteriskuser'),
+    password=os.getenv('MYSQL_PASSWORD', 'asteriskpassword'),
+    db=os.getenv('CDR_MYSQL_DATABASE', 'asterisk')
+)
+
+# Initialize queue manager
+queue_manager = QueueManager(
     host=os.getenv('MYSQL_HOST', 'localhost'),
     port=int(os.getenv('MYSQL_PORT', '3306')),
     user=os.getenv('MYSQL_USER', 'asteriskuser'),
@@ -68,9 +123,18 @@ async def lifespan(app: FastAPI):
         await endpoint_manager.connect()
         logger.info("MySQL connection established successfully")
         
+        # Connect to CDR MySQL database
+        logger.info("Connecting to CDR MySQL database...")
+        await cdr_manager.connect()
+        logger.info("CDR MySQL connection established successfully")
+        
         # Set AMI client in endpoint manager to enable configuration reloads
         endpoint_manager.ami_client = ami_client
         logger.info("AMI client set in endpoint manager")
+        
+        # Set AMI client in queue manager to enable configuration reloads
+        queue_manager.ami_client = ami_client
+        logger.info("AMI client set in queue manager")
         
         # Test AMI event handling
         logger.info("Testing AMI event handling...")
@@ -90,10 +154,11 @@ async def lifespan(app: FastAPI):
             await ami_client.close()
             logger.info("AMI connection closed successfully")
             
-            # Close MySQL connection
-            logger.info("Closing MySQL connection...")
+            # Close MySQL connections
+            logger.info("Closing MySQL connections...")
             await endpoint_manager.close()
-            logger.info("MySQL connection closed successfully")
+            await queue_manager.close()
+            logger.info("MySQL connections closed successfully")
         except Exception as e:
             logger.error(f"Error during shutdown: {e}")
 
@@ -125,15 +190,7 @@ async def disconnect(sid):
     logger.info(f"SocketIO client disconnected: {sid}")
     pass
 
-""" # Mount static files directory
-static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'frontend', 'static')
-app.mount("/static", StaticFiles(directory=static_dir), name="static")
-
-# Favicon route
-@app.get('/favicon.ico', include_in_schema=False)
-async def favicon():
-    favicon_path = os.path.join(static_dir, 'img', 'favicon.ico')
-    return FileResponse(favicon_path) """
+# API root endpoint
 
 # Mount Socket.IO on the FastAPI app
 socket_app = socketio.ASGIApp(sio, app)
@@ -142,6 +199,11 @@ socket_app = socketio.ASGIApp(sio, app)
 
 @app.get("/")
 async def root():
+    # API root endpoint
+    return {"message": "ISPBX API is running"}
+
+@app.get("/api")
+async def api_root():
     return {
         "message": "ISPBX Manager API",
         "status": "healthy",
@@ -295,6 +357,324 @@ async def delete_endpoint(endpoint_id: str):
     except Exception as e:
         logger.error(f"Error deleting endpoint {endpoint_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to delete endpoint: {str(e)}")
+
+# Queue API Routes
+@app.post("/api/queues", status_code=201)
+async def create_queue(queue: QueueCreate):
+    """Create a new queue"""
+    try:
+        logger.info(f"Creating queue {queue.queue_name}, payload={queue}")
+        
+        # Check if queue already exists
+        existing = await queue_manager.get_queue(queue.queue_name)
+        if existing:
+            raise HTTPException(status_code=409, detail=f"Queue {queue.queue_name} already exists")
+        
+        # Create queue
+        success = await queue_manager.create_queue(
+            queue_name=queue.queue_name,
+            strategy=queue.strategy,
+            timeout=queue.timeout,
+            musiconhold=queue.musiconhold,
+            announce=queue.announce,
+            context=queue.context,
+            maxlen=queue.maxlen,
+            servicelevel=queue.servicelevel,
+            wrapuptime=queue.wrapuptime
+        )
+        
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to create queue")
+        
+        # Get the created queue
+        created_queue = await queue_manager.get_queue(queue.queue_name)
+        
+        return {
+            "status": "success",
+            "message": f"Queue {queue.queue_name} created successfully",
+            "queue": created_queue
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating queue: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create queue: {str(e)}")
+
+@app.get("/api/queues")
+async def list_queues():
+    """List all queues"""
+    try:
+        queues = await queue_manager.list_queues()
+        return {
+            "status": "success",
+            "queues": queues
+        }
+    except Exception as e:
+        logger.error(f"Error listing queues: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to list queues: {str(e)}")
+
+@app.get("/api/queues/{queue_name}")
+async def get_queue(queue_name: str):
+    """Get details for a specific queue"""
+    try:
+        queue = await queue_manager.get_queue(queue_name)
+        if not queue:
+            raise HTTPException(status_code=404, detail=f"Queue {queue_name} not found")
+        
+        return {
+            "status": "success",
+            "queue": queue
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting queue {queue_name}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get queue: {str(e)}")
+
+@app.put("/api/queues/{queue_name}")
+async def update_queue(queue_name: str, updates: QueueUpdate):
+    """Update an existing queue"""
+    try:
+        # Check if queue exists
+        existing = await queue_manager.get_queue(queue_name)
+        if not existing:
+            raise HTTPException(status_code=404, detail=f"Queue {queue_name} not found")
+        
+        # Convert Pydantic model to dict, excluding None values
+        update_data = {k: v for k, v in updates.dict().items() if v is not None}
+        
+        if not update_data:
+            return {
+                "status": "success",
+                "message": "No updates provided"
+            }
+        
+        # Update queue
+        success = await queue_manager.update_queue(queue_name, update_data)
+        
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to update queue")
+        
+        # Get the updated queue
+        updated_queue = await queue_manager.get_queue(queue_name)
+        
+        return {
+            "status": "success",
+            "message": f"Queue {queue_name} updated successfully",
+            "queue": updated_queue
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating queue {queue_name}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update queue: {str(e)}")
+
+@app.delete("/api/queues/{queue_name}")
+async def delete_queue(queue_name: str):
+    """Delete a queue"""
+    try:
+        # Check if queue exists
+        existing = await queue_manager.get_queue(queue_name)
+        if not existing:
+            raise HTTPException(status_code=404, detail=f"Queue {queue_name} not found")
+        
+        # Delete queue
+        success = await queue_manager.delete_queue(queue_name)
+        
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to delete queue")
+        
+        return {
+            "status": "success",
+            "message": f"Queue {queue_name} deleted successfully"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting queue {queue_name}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete queue: {str(e)}")
+
+@app.post("/api/queues/{queue_name}/members")
+async def add_queue_member(queue_name: str, member: QueueMemberAdd):
+    """Add a member to a queue"""
+    try:
+        # Check if queue exists
+        existing = await queue_manager.get_queue(queue_name)
+        if not existing:
+            raise HTTPException(status_code=404, detail=f"Queue {queue_name} not found")
+        
+        # Add member to queue
+        success = await queue_manager.add_queue_member(
+            queue_name=queue_name,
+            interface=member.interface,
+            membername=member.membername,
+            penalty=member.penalty,
+            paused=member.paused,
+            wrapuptime=member.wrapuptime
+        )
+        
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to add member to queue")
+        
+        # Get updated queue members
+        members = await queue_manager.list_queue_members(queue_name)
+        
+        return {
+            "status": "success",
+            "message": f"Member {member.interface} added to queue {queue_name}",
+            "members": members
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error adding member to queue {queue_name}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to add member to queue: {str(e)}")
+
+@app.get("/api/queues/{queue_name}/members")
+async def list_queue_members(queue_name: str):
+    """List all members in a queue"""
+    try:
+        # Check if queue exists
+        existing = await queue_manager.get_queue(queue_name)
+        if not existing:
+            raise HTTPException(status_code=404, detail=f"Queue {queue_name} not found")
+        
+        # Get queue members
+        members = await queue_manager.list_queue_members(queue_name)
+        
+        return {
+            "status": "success",
+            "members": members
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error listing members for queue {queue_name}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to list queue members: {str(e)}")
+
+@app.put("/api/queues/{queue_name}/members/{interface}")
+async def update_queue_member(queue_name: str, interface: str, updates: QueueMemberUpdate):
+    """Update a queue member"""
+    try:
+        # Format interface to ensure it's in the correct format
+        if not interface.startswith("PJSIP/"):
+            interface = f"PJSIP/{interface}"
+        
+        # Convert Pydantic model to dict, excluding None values
+        update_data = {k: v for k, v in updates.dict().items() if v is not None}
+        
+        if not update_data:
+            return {
+                "status": "success",
+                "message": "No updates provided"
+            }
+        
+        # Update queue member
+        success = await queue_manager.update_queue_member(queue_name, interface, update_data)
+        
+        if not success:
+            raise HTTPException(status_code=404, detail=f"Member {interface} not found in queue {queue_name}")
+        
+        # Get updated queue members
+        members = await queue_manager.list_queue_members(queue_name)
+        
+        return {
+            "status": "success",
+            "message": f"Member {interface} updated in queue {queue_name}",
+            "members": members
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating member {interface} in queue {queue_name}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update queue member: {str(e)}")
+
+@app.delete("/api/queues/{queue_name}/members/{interface}")
+async def remove_queue_member(queue_name: str, interface: str):
+    """Remove a member from a queue"""
+    try:
+        # Format interface to ensure it's in the correct format
+        if not interface.startswith("PJSIP/"):
+            interface = f"PJSIP/{interface}"
+        
+        # Remove member from queue
+        success = await queue_manager.remove_queue_member(queue_name, interface)
+        
+        if not success:
+            raise HTTPException(status_code=404, detail=f"Member {interface} not found in queue {queue_name}")
+        
+        return {
+            "status": "success",
+            "message": f"Member {interface} removed from queue {queue_name}"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error removing member {interface} from queue {queue_name}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to remove queue member: {str(e)}")
+
+@app.get("/api/queues/status")
+@app.get("/api/queues/{queue_name}/status")
+async def get_queue_status(queue_name: Optional[str] = None):
+    """Get real-time status of queues from Asterisk"""
+    try:
+        status = await queue_manager.get_queue_status(queue_name)
+        
+        return {
+            "status": "success",
+            "queue_status": status
+        }
+    except Exception as e:
+        logger.error(f"Error getting queue status: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get queue status: {str(e)}")
+
+# CDR API Routes
+@app.get("/api/cdr")
+async def get_cdr_records(
+    start_date: Optional[str] = Query(None, description="Start date (YYYY-MM-DD)"),
+    end_date: Optional[str] = Query(None, description="End date (YYYY-MM-DD)"),
+    src: Optional[str] = Query(None, description="Source extension"),
+    dst: Optional[str] = Query(None, description="Destination extension"),
+    disposition: Optional[str] = Query(None, description="Call disposition (ANSWERED, NO ANSWER, BUSY, FAILED)"),
+    limit: int = Query(100, description="Maximum number of records to return"),
+    offset: int = Query(0, description="Number of records to skip")
+):
+    """Get CDR records with optional filtering"""
+    try:
+        logger.info(f"Fetching CDR records with filters: start_date={start_date}, end_date={end_date}, src={src}, dst={dst}, disposition={disposition}")
+        records = await cdr_manager.get_cdr_records(
+            start_date=start_date,
+            end_date=end_date,
+            src=src,
+            dst=dst,
+            disposition=disposition,
+            limit=limit,
+            offset=offset
+        )
+        
+        return {
+            "status": "success",
+            "count": len(records),
+            "records": records
+        }
+    except Exception as e:
+        logger.error(f"Error fetching CDR records: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch CDR records: {str(e)}")
+
+@app.get("/api/cdr/stats")
+async def get_cdr_stats():
+    """Get CDR statistics"""
+    try:
+        logger.info("Fetching CDR statistics")
+        stats = await cdr_manager.get_cdr_stats()
+        
+        return {
+            "status": "success",
+            "stats": stats
+        }
+    except Exception as e:
+        logger.error(f"Error fetching CDR statistics: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch CDR statistics: {str(e)}")
 
 # Expose socket_app for uvicorn
 if __name__ == "__main__":

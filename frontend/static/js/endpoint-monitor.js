@@ -64,11 +64,18 @@ class EndpointMonitor {
             row.setAttribute('data-extension', endpoint.Extension);
             
             row.innerHTML = `
-                <td>${endpoint.Extension}</td>
+                <td>
+                    <a href="/endpoint?extension=${endpoint.Extension}" class="text-decoration-none" target="_blank">
+                        ${endpoint.Extension}
+                    </a>
+                </td>
                 <td>${endpoint.Name}</td>
                 <td>${this.formatEndpointState(endpoint.State)}</td>
                 <td>${endpoint.lastUpdated || formatTimestamp()}</td>
                 <td class="text-end">
+                    <a href="/endpoint?extension=${endpoint.Extension}" class="btn btn-sm btn-outline-info me-1" title="View Dashboard" target="_blank">
+                        <i class="bi bi-graph-up"></i>
+                    </a>
                     <button class="btn btn-sm btn-outline-primary edit-endpoint-btn" data-extension="${endpoint.Extension}">
                         <i class="bi bi-pencil"></i>
                     </button>

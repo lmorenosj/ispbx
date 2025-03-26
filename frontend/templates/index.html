@@ -16,14 +16,25 @@
     <div class="container">
         <div class="row mb-3">
             <div class="col-12">
-                <div class="d-flex justify-content-end">
-                    <span id="connection-status" class="connection-status connection-disconnected me-2">Disconnected</span>
-                    <button id="refresh-btn" class="btn btn-primary btn-sm">
-                        <i class="bi bi-arrow-clockwise"></i> Refresh
-                        <span id="refresh-indicator">
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        </span>
-                    </button>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-0">ISPBX Dashboard</h1>
+                    </div>
+                    <div>
+                        <a href="/queues" class="btn btn-info btn-sm me-2">
+                            <i class="bi bi-telephone-plus"></i> Queues
+                        </a>
+                        <a href="/cdr" class="btn btn-info btn-sm me-2">
+                            <i class="bi bi-file-earmark-text"></i> Call Records
+                        </a>
+                        <span id="connection-status" class="connection-status connection-disconnected me-2">Disconnected</span>
+                        <button id="refresh-btn" class="btn btn-primary btn-sm">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                            <span id="refresh-indicator">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

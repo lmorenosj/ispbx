@@ -1,0 +1,62 @@
+<!-- Queue Member Modal for adding members to a queue -->
+<div class="modal fade" id="queueMemberModal" tabindex="-1" aria-labelledby="queueMemberModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="queueMemberModalLabel">Add Member to Queue</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger d-none" id="queueMemberFormError"></div>
+                
+                <form id="queueMemberForm">
+                    <div class="mb-3">
+                        <label for="memberQueueName" class="form-label">Queue Name</label>
+                        <input type="text" class="form-control" id="memberQueueName" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="memberInterface" class="form-label">Endpoint</label>
+                        <select class="form-select" id="memberInterface" required>
+                            <option value="" selected disabled>Select an endpoint</option>
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                        <div class="form-text">Select the endpoint to add to this queue.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="memberName" class="form-label">Member Name (Optional)</label>
+                        <input type="text" class="form-control" id="memberName" placeholder="Custom name for this member">
+                        <div class="form-text">Leave blank to use the endpoint name.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="memberPenalty" class="form-label">Penalty</label>
+                        <input type="number" class="form-control" id="memberPenalty" min="0" value="0">
+                        <div class="form-text">Higher penalty members are called after lower penalty members.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="memberPaused">
+                            <label class="form-check-label" for="memberPaused">
+                                Paused
+                            </label>
+                        </div>
+                        <div class="form-text">If checked, this member will not receive calls from the queue.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="memberWrapuptime" class="form-label">Wrapup Time (seconds)</label>
+                        <input type="number" class="form-control" id="memberWrapuptime" min="0" placeholder="Optional">
+                        <div class="form-text">Time after call before member is available again (overrides queue setting).</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveMemberBtn">Add Member</button>
+            </div>
+        </div>
+    </div>
+</div>

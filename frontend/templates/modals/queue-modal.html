@@ -1,0 +1,105 @@
+<!-- Queue Modal for adding or editing queues -->
+<div class="modal fade" id="queueModal" tabindex="-1" aria-labelledby="queueModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="queueModalLabel">Add New Queue</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger d-none" id="queueFormError"></div>
+                
+                <form id="queueForm">
+                    <input type="hidden" id="queueAction" value="create">
+                    
+                    <div class="mb-3">
+                        <label for="queueName" class="form-label">Queue Name</label>
+                        <input type="text" class="form-control" id="queueName" required 
+                               placeholder="Enter queue name (e.g. sales, support)">
+                        <div class="form-text">Queue name can only contain letters, numbers, hyphens, and underscores.</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="queueStrategy" class="form-label">Ring Strategy</label>
+                                <select class="form-select" id="queueStrategy">
+                                    <option value="ringall">Ring All (ringall)</option>
+                                    <option value="leastrecent">Least Recent (leastrecent)</option>
+                                    <option value="fewestcalls">Fewest Calls (fewestcalls)</option>
+                                    <option value="random">Random (random)</option>
+                                    <option value="rrmemory">Round Robin with Memory (rrmemory)</option>
+                                    <option value="linear">Linear (linear)</option>
+                                    <option value="wrandom">Weighted Random (wrandom)</option>
+                                </select>
+                                <div class="form-text">How the queue distributes calls to members.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="queueTimeout" class="form-label">Timeout (seconds)</label>
+                                <input type="number" class="form-control" id="queueTimeout" min="0" value="15">
+                                <div class="form-text">How long to ring a member before giving up.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="queueMusicOnHold" class="form-label">Music on Hold</label>
+                                <input type="text" class="form-control" id="queueMusicOnHold" value="default">
+                                <div class="form-text">Music on hold class to use.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="queueAnnounce" class="form-label">Announce</label>
+                                <input type="text" class="form-control" id="queueAnnounce" placeholder="Optional">
+                                <div class="form-text">Announcement to play when caller enters queue.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="queueContext" class="form-label">Context</label>
+                                <input type="text" class="form-control" id="queueContext" value="from-queue">
+                                <div class="form-text">Context for queue connections.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="queueMaxlen" class="form-label">Max Length</label>
+                                <input type="number" class="form-control" id="queueMaxlen" min="0" value="0">
+                                <div class="form-text">Maximum number of callers allowed (0 = unlimited).</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="queueServicelevel" class="form-label">Service Level (seconds)</label>
+                                <input type="number" class="form-control" id="queueServicelevel" min="0" value="60">
+                                <div class="form-text">Used for service level statistics.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="queueWrapuptime" class="form-label">Wrapup Time (seconds)</label>
+                                <input type="number" class="form-control" id="queueWrapuptime" min="0" value="0">
+                                <div class="form-text">Time after call before member is available again.</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveQueueBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

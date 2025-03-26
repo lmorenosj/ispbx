@@ -51,8 +51,23 @@ Action: Login
 Username: $AMI_USER
 Secret: $AMI_PASS
 
-Action: ExtensionState
-Exten: 100
+# Check logs using CLI command
+Action: Command
+Command: cli show history
+
+# Check all PJSIP endpoints
+Action: PJSIPShowEndpoints
+
+# Check specific endpoint details
+Action: PJSIPShowEndpoint
+Endpoint: 3000
+
+# Check if endpoint is registered
+Action: PJSIPShowContacts
+Endpoint: 3000
+
+# Check device states
+Action: DeviceStateList
 
 Action: Logoff
 

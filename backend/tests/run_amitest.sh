@@ -25,4 +25,4 @@ source $VENV_DIR/bin/activate
 
 
 echo "Running tests for all extensions"
-PYTHONPATH=$BACKEND_DIR/src python3 tests/endpoint_monitor_test.py
+PYTHONPATH=$BACKEND_DIR/src python3 tests/queue_api_test.py

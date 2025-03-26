@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISPBX - Call Detail Records</title>
+    <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Datepicker CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="/static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1>Call Detail Records</h1>
+                    <div>
+                        <a href="/" class="btn btn-outline-secondary btn-sm me-2">
+                            <i class="bi bi-house"></i> Dashboard
+                        </a>
+                        <span id="connection-status" class="connection-status connection-disconnected me-2">Disconnected</span>
+                        <button id="refresh-btn" class="btn btn-primary btn-sm">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                            <span id="refresh-indicator">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CDR Statistics Card -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0">Call Statistics</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="cdr-stats">
+                            <div class="col-md-3 mb-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Total Calls</h5>
+                                        <h3 id="total-calls">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Answered Calls</h5>
+                                        <h3 id="answered-calls">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card bg-warning text-dark">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Calls Today</h5>
+                                        <h3 id="calls-today">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Avg. Duration (sec)</h5>
+                                        <h3 id="avg-duration">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CDR Filter Card -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0">Filter Records</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="cdr-filter-form">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="start-date" class="form-label">Start Date</label>
+                                    <input type="text" class="form-control" id="start-date" placeholder="YYYY-MM-DD">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="end-date" class="form-label">End Date</label>
+                                    <input type="text" class="form-control" id="end-date" placeholder="YYYY-MM-DD">
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label for="src" class="form-label">Source</label>
+                                    <input type="text" class="form-control" id="src" placeholder="Extension">
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label for="dst" class="form-label">Destination</label>
+                                    <input type="text" class="form-control" id="dst" placeholder="Extension">
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label for="disposition" class="form-label">Disposition</label>
+                                    <select class="form-select" id="disposition">
+                                        <option value="">All</option>
+                                        <option value="ANSWERED">Answered</option>
+                                        <option value="NO ANSWER">No Answer</option>
+                                        <option value="BUSY">Busy</option>
+                                        <option value="FAILED">Failed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-end">
+                                    <button type="button" id="clear-filters" class="btn btn-outline-secondary me-2">
+                                        <i class="bi bi-x-circle"></i> Clear Filters
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-search"></i> Search
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CDR Records Table -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0">Call Records</h2>
+                        <button id="export-csv" class="btn btn-success btn-sm">
+                            <i class="bi bi-file-earmark-excel"></i> Export CSV
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date/Time</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Duration</th>
+                                        <th>Billable</th>
+                                        <th>Status</th>
+                                        <th>Channel</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cdr-table">
+                                    <!-- CDR records will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="loading-indicator" class="text-center p-3">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading CDR data...</p>
+                        </div>
+                        <div id="no-records" class="alert alert-info d-none">
+                            No records found matching your criteria.
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                Showing <span id="records-showing">0</span> of <span id="records-total">0</span> records
+                            </div>
+                            <nav aria-label="CDR pagination">
+                                <ul class="pagination" id="cdr-pagination">
+                                    <!-- Pagination will be populated here -->
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Socket.IO client -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    
+    <!-- Datepicker -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    <!-- Utility functions -->
+    <script src="/static/js/utils.js"></script>
+    
+    <!-- CDR Manager -->
+    <script src="/static/js/cdr-manager.js"></script>
+    
+    <!-- CDR App JS -->
+    <script src="/static/js/cdr-app.js"></script>
+</body>
+</html>
