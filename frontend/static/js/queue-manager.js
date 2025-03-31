@@ -1,3 +1,4 @@
+
 class QueueManager {
     constructor() {
         // Modal elements
@@ -150,9 +151,14 @@ class QueueManager {
             
             // Fetch queue details directly from backend
             try {
-                const response = await fetch(`/api/queues/${queueName}`);
-                const data = await response.json();
+                
+  
+                const { status, data } = await fetchAPI(API_CONFIG.QUEUES.DB_GET(queueName));
                 console.debug('[FetchAPI] Queue data received:', data);
+
+                //const response = await fetch(`/api/queues/${queueName}`);
+                //const data = await response.json();
+                //console.debug('[FetchAPI] Queue data received:', data);
                 
                 if (data.status === 'success' && data.queue) {
                     const queue = data.queue.queue;
@@ -198,14 +204,14 @@ class QueueManager {
         // Set queue name
         this.memberQueueName.value = queueName;
         this.memberQueueName.disabled = true;
-        
+        console.debug('Queue name:', this.memberQueueName.value);
         // Set default values
         this.memberPenalty.value = '0';
         this.memberPaused.checked = false;
         this.memberWrapuptime.value = '';
         
         // Update modal title
-        document.getElementById('queueMemberModalLabel').textContent = `Add Member to Queue: ${queueName}`;
+        document.getElementById('queueMemberModalLabel').textContent = `Add Member to Queue: ${this.memberQueueName.value}`;
         
         // Fetch available endpoints for the dropdown
         this.loadAvailableEndpoints();
@@ -216,11 +222,12 @@ class QueueManager {
     
     // Load available endpoints for the member dropdown
     async loadAvailableEndpoints() {
+        
         try {
-            const response = await fetch('/api/endpoints/db');
-            const data = await response.json();
-            
-            if (data.status === 'success' && data.endpoints) {
+            const { status, data } = await fetchAPI(API_CONFIG.ENDPOINTS.LIST);
+            console.debug('Available endpoints >>:', data);
+
+            if (status === 200 && data.endpoints) {
                 const select = this.memberInterface;
                 
                 // Clear existing options
@@ -237,18 +244,8 @@ class QueueManager {
                 // Add endpoints as options
                 data.endpoints.forEach(endpoint => {
                     const option = document.createElement('option');
-                    option.value = `PJSIP/${endpoint.id}`;
-                    
-                    // Extract name from callerid if available
-                    let displayName = endpoint.id;
-                    if (endpoint.callerid) {
-                        const nameMatch = endpoint.callerid.match(/"([^"]+)"/);
-                        if (nameMatch) {
-                            displayName = `${nameMatch[1]} (${endpoint.id})`;
-                        }
-                    }
-                    
-                    option.textContent = displayName;
+                    option.value = endpoint.Extension;
+                    option.textContent = `${endpoint.Name} (${endpoint.Extension})`;
                     select.appendChild(option);
                 });
             } else {
@@ -382,7 +379,7 @@ class QueueManager {
             const isCreate = this.queueAction.value === 'create';
             
             // Set up the request
-            const url = isCreate ? '/api/queues' : `/api/queues/${queueName}`;
+            const url = isCreate ? API_CONFIG.QUEUES.CREATE : API_CONFIG.QUEUES.UPDATE(queueName);
             const method = isCreate ? 'POST' : 'PUT';
             
             // If updating, remove queue_name from payload
@@ -395,7 +392,7 @@ class QueueManager {
             this.saveQueueBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
             
             // Send the request
-            const response = await fetch(url, {
+            const { status, data } = await fetchAPI(url, {
                 method,
                 headers: {
                     'Content-Type': 'application/json'
@@ -403,13 +400,11 @@ class QueueManager {
                 body: JSON.stringify(payload)
             });
             
-            const data = await response.json();
-            
             // Reset button state
             this.saveQueueBtn.disabled = false;
             this.saveQueueBtn.textContent = 'Save';
             
-            if (response.ok) {
+            if (data.status === 'success') {
                 console.info(`Queue ${isCreate ? 'created' : 'updated'} successfully:`, data);
                 
                 // Close the modal
@@ -421,7 +416,7 @@ class QueueManager {
                 }
                 
                 // Show success message
-                showToast(`Queue ${queueName} ${isCreate ? 'created' : 'updated'} successfully`);
+                console.info(`Queue ${queueName} ${isCreate ? 'created' : 'updated'} successfully`);
             } else {
                 console.error(`Failed to ${isCreate ? 'create' : 'update'} queue:`, data);
                 this.formError.textContent = data.detail || `Failed to ${isCreate ? 'create' : 'update'} queue. Please try again.`;
@@ -446,17 +441,17 @@ class QueueManager {
             this.confirmDeleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...';
             
             // Send delete request
-            const response = await fetch(`/api/queues/${queueName}`, {
-                method: 'DELETE'
-            });
-            
-            const data = await response.json();
+            const { status, data } = await fetchAPI(
+                API_CONFIG.QUEUES.DELETE(queueName),
+                {
+                    method: 'DELETE'
+                });
             
             // Reset button state
             this.confirmDeleteBtn.disabled = false;
             this.confirmDeleteBtn.textContent = 'Delete';
             
-            if (response.ok) {
+            if (status === 200) {
                 console.info('Queue deleted successfully:', data);
                 
                 // Close the modal
@@ -468,16 +463,16 @@ class QueueManager {
                 }
                 
                 // Show success message
-                showToast(`Queue ${queueName} deleted successfully`);
+                console.info(`Queue ${queueName} deleted successfully`);
             } else {
                 console.error('Failed to delete queue:', data);
-                showToast(`Failed to delete queue: ${data.detail || 'Unknown error'}`, 'error');
+                
             }
         } catch (error) {
             console.error('Error deleting queue:', error);
             this.confirmDeleteBtn.disabled = false;
             this.confirmDeleteBtn.textContent = 'Delete';
-            showToast(`Error deleting queue: ${error.message}`, 'error');
+            
         }
     }
     
@@ -485,12 +480,12 @@ class QueueManager {
     async saveQueueMember() {
         console.info('saveQueueMember method called');
         try {
-            // Validate form
+/*             // Validate form
             if (!this.validateMemberForm()) {
                 console.warn('Form validation failed');
                 return;
             }
-            console.debug('Form validation passed');
+            console.debug('Form validation passed'); */
             
             // Get form values
             const queueName = this.memberQueueName.value.trim();
@@ -500,6 +495,7 @@ class QueueManager {
             const paused = this.memberPaused.checked ? 1 : 0;
             const wrapuptime = this.memberWrapuptime.value.trim() ? parseInt(this.memberWrapuptime.value.trim()) : null;
             
+            console.debug('Saving queue member - Form values:', { queueName, interfaceName, membername, penalty, paused, wrapuptime });
             // Prepare request payload
             const payload = {
                 interface: interfaceName,
@@ -512,23 +508,22 @@ class QueueManager {
             // Show loading state
             this.saveMemberBtn.disabled = true;
             this.saveMemberBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
-            
+ 
             // Send the request
-            const response = await fetch(`/api/queues/${queueName}/members`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
+            const { status, data } = await fetchAPI(
+                API_CONFIG.QUEUE_MEMBERS.ADD(queueName),
+                {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
             
-            const data = await response.json();
+            console.debug('[FetchAPI] Queue data received after creation:', data);
             
             // Reset button state
             this.saveMemberBtn.disabled = false;
             this.saveMemberBtn.textContent = 'Add Member';
             
-            if (response.ok) {
+            if (status === 'success') {
                 console.info('Member added successfully:', data);
                 
                 // Close the modal
@@ -540,7 +535,7 @@ class QueueManager {
                 }
                 
                 // Show success message
-                showToast(`Member added to queue ${queueName} successfully`);
+                console.info(`Member added to queue ${queueName} successfully`);
             } else {
                 console.error('Failed to add member:', data);
                 this.memberFormError.textContent = data.detail || 'Failed to add member. Please try again.';
@@ -564,13 +559,11 @@ class QueueManager {
             }
             
             // Send delete request
-            const response = await fetch(`/api/queues/${queueName}/members/${encodeURIComponent(interfaceName)}`, {
+            const { status, data } = await fetchAPI(API_CONFIG.QUEUE_MEMBERS.REMOVE(queueName, interfaceName), {
                 method: 'DELETE'
             });
             
-            const data = await response.json();
-            
-            if (response.ok) {
+            if (status === 200) {
                 console.info('Member removed successfully:', data);
                 
                 // Refresh the queue details
@@ -579,14 +572,13 @@ class QueueManager {
                 }
                 
                 // Show success message
-                showToast(`Member removed from queue ${queueName} successfully`);
+                console.info(`Member removed from queue ${queueName} successfully`);
             } else {
                 console.error('Failed to remove member:', data);
-                showToast(`Failed to remove member: ${data.detail || 'Unknown error'}`, 'error');
+
             }
         } catch (error) {
             console.error('Error removing member:', error);
-            showToast(`Error removing member: ${error.message}`, 'error');
         }
     }
 }

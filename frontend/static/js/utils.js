@@ -24,6 +24,21 @@ const API_CONFIG = {
         CREATE: '/api/endpoints',
         UPDATE: (id) => `/api/endpoints/${id}`,
         DELETE: (id) => `/api/endpoints/${id}`
+    },
+    QUEUES: {
+        LIST: '/api/queues',
+        DB_LIST: '/api/queues/db',
+        GET: (id) => `/api/queues/${id}`,
+        DB_GET: (id) => `/api/queues/db/${id}`,
+        CREATE: '/api/queues',
+        UPDATE: (id) => `/api/queues/${id}`,
+        DELETE: (id) => `/api/queues/${id}`
+    },
+    QUEUE_MEMBERS: {
+        ADD: (queueName) => `/api/queues/${queueName}/members`,
+        UPDATE: (queueName, interfaceName) => `/api/queues/${queueName}/members/${interfaceName}`,
+        REMOVE: (queueName, interfaceName) => `/api/queues/${queueName}/members/${interfaceName}`,
+        LIST: (queueName) => `/api/queues/${queueName}/members`
     }
 };
 
@@ -117,8 +132,8 @@ function initializeSocketConnection(endpointMonitor, callMonitor) {
 }
 
 // API helper functions
-async function fetchAPI(endpoint, options = {}) {
-    const url = `${API_CONFIG.BACKEND_URL}${endpoint}`;
+async function fetchAPI(segment, options = {}) {
+    const url = `${API_CONFIG.BACKEND_URL}${segment}`;
     
     try {
         const response = await fetch(url, {

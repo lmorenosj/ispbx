@@ -24,13 +24,13 @@ class QueueMonitor {
         // Initial data load
         this.refreshQueues();
         
-        // Set up refresh interval
+/*         // Set up refresh interval
         this.refreshInterval = setInterval(() => {
             this.refreshQueues();
             if (this.currentQueueName) {
                 this.refreshQueueDetails(this.currentQueueName);
             }
-        }, this.refreshRate);
+        }, this.refreshRate); */
         
         // Add event listeners for queue selection
         document.addEventListener('click', (event) => {
@@ -75,16 +75,16 @@ class QueueMonitor {
             }
             
             // Fetch queues from API
-            const response = await fetch('/api/queues');
-            const data = await response.json();
-            
+            const { status, data } = await fetchAPI(API_CONFIG.QUEUES.DB_LIST);
+            console.log(`Queue response status: ${status}`);
+            console.log('Queue response data:', data);
             // Hide loading indicator
             this.queueLoadingIndicator.classList.add('d-none');
             
             if (data.status === 'success' && data.queues && data.queues.length > 0) {
                 // Clear existing table
                 this.queuesTable.innerHTML = '';
-                
+                console.debug('[QueueMonitor] Adding queues to table:', data.queues);
                 // Add queues to table
                 data.queues.forEach(queue => {
                     this.addQueueToTable(queue);
@@ -136,14 +136,20 @@ class QueueMonitor {
         this.queuesTable.appendChild(row);
     }
     
-    // Show queue details
     async showQueueDetails(queueName) {
         try {
+            console.debug('Showing queue details:', queueName);
             // Store current queue name
             this.currentQueueName = queueName;
             
             // Update queue name in header
             document.getElementById('queue-name').textContent = queueName;
+            
+            // Update the "Add Member" button with the current queue name
+            const addMemberBtn = document.querySelector('.add-member-btn');
+            if (addMemberBtn) {
+                addMemberBtn.setAttribute('data-queue', queueName);
+            }
             
             // Hide queues list and show details
             document.getElementById('queues-list-container').classList.add('d-none');
@@ -153,7 +159,6 @@ class QueueMonitor {
             await this.refreshQueueDetails(queueName);
         } catch (error) {
             console.error('Error showing queue details:', error);
-            showToast(`Error loading queue details: ${error.message}`, 'error');
         }
     }
     
@@ -178,8 +183,7 @@ class QueueMonitor {
             this.queueDetailsNoData.classList.add('d-none');
             
             // Fetch queue details from API
-            const response = await fetch(`/api/queues/${queueName}`);
-            const data = await response.json();
+            const { status, data } = await fetchAPI(API_CONFIG.QUEUES.DB_GET(queueName));
             
             // Hide loading indicator
             this.queueDetailsLoadingIndicator.classList.add('d-none');
@@ -211,20 +215,19 @@ class QueueMonitor {
         const queue = queueData.queue;
         
         // Update basic information
-        document.getElementById('queue-strategy').textContent = queue.strategy || 'ringall';
-        document.getElementById('queue-timeout').textContent = queue.timeout || '-';
-        document.getElementById('queue-musiconhold').textContent = queue.musiconhold || 'default';
-        document.getElementById('queue-announce').textContent = queue.announce || '-';
-        document.getElementById('queue-context').textContent = queue.context || 'from-queue';
-        document.getElementById('queue-maxlen').textContent = queue.maxlen || '0';
-        document.getElementById('queue-servicelevel').textContent = queue.servicelevel || '60';
-        document.getElementById('queue-wrapuptime').textContent = queue.wrapuptime || '0';
-        
-        // Update status information if available
+        document.getElementById('queue-strategy').textContent = queue.strategy ?? 'ringall';
+        document.getElementById('queue-timeout').textContent = queue.timeout ?? '-';
+        document.getElementById('queue-musiconhold').textContent = queue.musiconhold ?? 'default';
+        document.getElementById('queue-announce').textContent = queue.announce ?? '-';
+        document.getElementById('queue-context').textContent = queue.context ?? 'from-queue';
+        document.getElementById('queue-maxlen').textContent = queue.maxlen ?? '0';
+        document.getElementById('queue-servicelevel').textContent = queue.servicelevel ?? '60';
+        document.getElementById('queue-wrapuptime').textContent = queue.wrapuptime ?? '0';
+/*         // Update status information if available
         if (queueData.status) {
-            document.getElementById('queue-calls').textContent = queueData.status.calls || '0';
-            document.getElementById('queue-completed').textContent = queueData.status.completed || '0';
-            document.getElementById('queue-abandoned').textContent = queueData.status.abandoned || '0';
+            document.getElementById('queue-calls').textContent = queueData.status.calls ?? '0';
+            document.getElementById('queue-completed').textContent = queueData.status.completed ?? '0';
+            document.getElementById('queue-abandoned').textContent = queueData.status.abandoned ?? '0'; 
             document.getElementById('queue-holdtime').textContent = queueData.status.holdtime ? formatSeconds(queueData.status.holdtime) : '0s';
             document.getElementById('queue-talktime').textContent = queueData.status.talktime ? formatSeconds(queueData.status.talktime) : '0s';
         } else {
@@ -234,24 +237,26 @@ class QueueMonitor {
             document.getElementById('queue-abandoned').textContent = '0';
             document.getElementById('queue-holdtime').textContent = '0s';
             document.getElementById('queue-talktime').textContent = '0s';
-        }
+        } */
     }
     
     // Refresh queue members
     async refreshQueueMembers(queueName) {
         try {
             // Fetch queue members from API
-            const response = await fetch(`/api/queues/${queueName}/members`);
-            const data = await response.json();
+            const {status, data} = await fetchAPI(API_CONFIG.QUEUE_MEMBERS.LIST(queueName));
             
+            console.debug('Queue members:', data);
             // Clear existing members table
             this.queueMembersTable.innerHTML = '';
             
-            if (data.status === 'success' && data.members && data.members.length > 0) {
+            if (data.status === 'success' && data.members) {
                 // Add members to table
-                data.members.forEach(member => {
-                    this.addMemberToTable(queueName, member);
-                });
+                if(data.members.length > 0) {
+                    data.members.forEach(member => {
+                        this.addMemberToTable(queueName, member);
+                    });
+                }
                 
                 // Show members table
                 document.getElementById('queue-members-container').classList.remove('d-none');

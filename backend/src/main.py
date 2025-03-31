@@ -400,7 +400,7 @@ async def create_queue(queue: QueueCreate):
         logger.error(f"Error creating queue: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to create queue: {str(e)}")
 
-@app.get("/api/queues")
+@app.get("/api/queues/db")
 async def list_queues():
     """List all queues"""
     try:
@@ -413,7 +413,7 @@ async def list_queues():
         logger.error(f"Error listing queues: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to list queues: {str(e)}")
 
-@app.get("/api/queues/{queue_name}")
+@app.get("/api/queues/db/{queue_name}")
 async def get_queue(queue_name: str):
     """Get details for a specific queue"""
     try:
@@ -570,6 +570,7 @@ async def update_queue_member(queue_name: str, interface: str, updates: QueueMem
             }
         
         # Update queue member
+        logger.debug(f"Updating member {interface} in queue {queue_name} with updates: {update_data}")
         success = await queue_manager.update_queue_member(queue_name, interface, update_data)
         
         if not success:
@@ -592,12 +593,14 @@ async def update_queue_member(queue_name: str, interface: str, updates: QueueMem
 @app.delete("/api/queues/{queue_name}/members/{interface}")
 async def remove_queue_member(queue_name: str, interface: str):
     """Remove a member from a queue"""
+    logger.info(f"Removing member {interface} from queue {queue_name}")
     try:
         # Format interface to ensure it's in the correct format
-        if not interface.startswith("PJSIP/"):
-            interface = f"PJSIP/{interface}"
+        #if not interface.startswith("PJSIP/"):
+        #    interface = f"PJSIP/{interface}"
         
         # Remove member from queue
+        logger.info(f"Removing member {interface} from queue {queue_name}")
         success = await queue_manager.remove_queue_member(queue_name, interface)
         
         if not success:
